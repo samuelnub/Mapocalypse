@@ -1,0 +1,4 @@
+26/9/18
+    main electron window set up
+    apparently it won't initialise if electron is attempting to be initialised in another file
+    (it needs to be initiated within the js file you ran the electron command with)

@@ -1,0 +1,17 @@
+{
+  "name": "mapocalypse",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "electron src/main.js"
+  },
+  "author": "Sam Y",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron": "^3.0.0"
+  }
+}
