@@ -2,3 +2,8 @@
     main electron window set up
     apparently it won't initialise if electron is attempting to be initialised in another file
     (it needs to be initiated within the js file you ran the electron command with)
+
+9/10/18
+    apparently in the render process, you need remote.require("./yourlocalmodule") for it to work
+    (that's if you use <script src=""></script> instead of <script>window.onload = () => {require("./thing");}</script>)
+    
