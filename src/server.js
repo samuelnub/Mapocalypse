@@ -1,13 +1,12 @@
 exports.Server = Server;
+// The server will only be instantiated if you're hosting it
 function Server() {
     // requiring them here as to prevent duplicates when requiring this file itself
     this.app = require("express")();
-    this.server = require("http").Server(app);
-    this.io = require("socket.io")(server);
+    this.server = require("http").Server(this.app);
+    this.io = require("socket.io")(this.server);
 
-    this.port = this.app.get("port") || 3000;
-
-    io.on("connect", (socket) => {
+    this.io.on("connect", (socket) => {
         console.log("a user connected to the server");
 
         socket.on("disconnect", () => {
@@ -16,16 +15,12 @@ function Server() {
     });
 }
 
-Server.prototype.host = function(port) {
-    this.port = port;
-    this.app.set("port", port);
+Server.prototype.listen = function(port) {
+    this.server.listen(port);
+    console.log("Server listening on port " + port);
 };
 
-Server.prototype.connect = function(address, port) {
-    
+Server.prototype.close = function() {
+    this.server.close();
+    console.log("Server closed");
 };
-
-Server.prototype.quit = function() {
-    this.io.close();
-};
-

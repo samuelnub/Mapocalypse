@@ -1,6 +1,9 @@
 const electron = require("electron");
 const consts = require("./consts");
 const app = electron.app;
+const Server = require("./server").Server;
+
+global.MAPOCALYPSE_SERVER = new Server();
 
 function createWindow() {
     let window = new electron.BrowserWindow({

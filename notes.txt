@@ -7,3 +7,12 @@
     apparently in the render process, you need remote.require("./yourlocalmodule") for it to work
     (that's if you use <script src=""></script> instead of <script>window.onload = () => {require("./thing");}</script>)
     
+14/11/18
+    Current gameplan:
+    The server object will always persist as long as the program's running
+    But when the player starts a new game/hosts, then the server will .listen()
+    And the clientside will have the socket.io client library to use io.connect
+    
+21/11/18
+    FYI, IPC will not transfer functions, as it's JSON'ised
+    So remote.getGlobal must be used for the server
