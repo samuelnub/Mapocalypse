@@ -16,3 +16,22 @@
 21/11/18
     FYI, IPC will not transfer functions, as it's JSON'ised
     So remote.getGlobal must be used for the server
+
+4/12/18
+    You can send functions in socket.emit()!
+
+13/12/18
+    Working on loading/instantiating world data
+
+14/1/19
+    Work on listing available worlds in start-config.html/js and start implementing transferring
+    the proper world data from the main thread to the client thread
+    Refactored the require's in erver.js
+
+16/1/19
+    It's a pain in the ass for the server to try and get what the current world name is,
+    The server object now contains the Game object (similar to the old mapocalypse one)
+
+29/1/19
+    Available locally saved worlds are properly listed in start-configure's load section
+    Need to work on saving newly created worlds (as they're the host)

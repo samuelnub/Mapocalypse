@@ -1,0 +1,9 @@
+{
+    "test1" : {
+        "name" : "test1",
+        "id" : "1ef234",
+        "seed" : 1234,
+        "entities" : [],
+        "places" : []
+    }
+}
