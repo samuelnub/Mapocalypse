@@ -1,5 +1,7 @@
 const fs = require("fs");
-const helpers = require("./helpers.js")
+const helpers = require("./helpers.js");
+const app = require("electron").app;
+const path = require("path");
 
 const worldDataFormat = {
     name: "name",
@@ -27,16 +29,16 @@ function WorldsManager(server) {
     // Params:
     //  server: server instance
     this.worldsFilepath = "../data/worlds.json";
-    this.worlds = require(this.worldsFilepath);
+    this.worlds = require(this.worldsFilepath) || {};
     
 }
 
 WorldsManager.prototype.create = function(params)
 {
     // Follow the params of the WorldData structure
-    if(this.worlds.hasOwnProperty(worldName)) {
-        console.log("World " + worldName + " already exists!");
-        worldName = worldName + "0";
+    if(this.worlds.hasOwnProperty(params[worldDataFormat.name])) {
+        console.log("World " + params[worldDataFormat.name] + " already exists!");
+        params[worldDataFormat.name] = params[worldDataFormat.name] + "0";
     }
     this.worlds[params[worldDataFormat.name]] = new WorldData(params);
     return this.worlds[params[worldDataFormat.name]]; // key: worldName, value: worldData (with name too)
@@ -52,7 +54,7 @@ WorldsManager.prototype.get = function(worldName) {
 };
 
 WorldsManager.prototype.list = function() {
-    // Just lists the keys (worldnames) in this.worlds
+    // Just lists the keys (worldnames) in this.worlds, as an array
     return Object.keys(this.worlds);
 }
 
@@ -74,7 +76,7 @@ WorldsManager.prototype.delete = function(worldName) {
 };
 
 WorldsManager.prototype.writeToFile = function() {
-    fs.writeFile(this.worldsFilepath, JSON.stringify(this.worlds), (err) => {
+    fs.writeFile(path.resolve(__dirname, this.worldsFilepath), JSON.stringify(this.worlds), (err) => {
         if(err) {
             throw err;
             return;

@@ -3,6 +3,7 @@
     const remote = require("electron").remote;
     const ipc = require("electron").ipcRenderer;
     const GameLoadInfo = require("./game-load-info").GameLoadInfo;
+    const helpers = require("./helpers.js");
 
     // "Load" code
     let loadWorldsSelect = document.getElementById("load-worlds-select");
@@ -14,11 +15,14 @@
     }
 
     // "New" code
+    const maxWorldNameLength = 64;
+    const maxPortLength = 5;
     let newBtn = document.getElementById("new-btn");
     newBtn.addEventListener("click", (e) => {
         // TODO: sanitize
         let port = document.getElementById("new-port-input").value;
-        ipc.send(consts.IPC_EVENTS.GAME_START_LOAD_RTM, new GameLoadInfo("localhost:" + port, "wobble"))
+        let worldName = document.getElementById("new-worldname-input").value;
+        ipc.send(consts.IPC_EVENTS.GAME_START_LOAD_RTM, new GameLoadInfo("localhost:" + helpers.sanitizeInput(port, maxPortLength), helpers.sanitizeInput(worldName, maxWorldNameLength)));
         
     }, false);
 })();

@@ -5,6 +5,7 @@ exports.MAIN_MENU_HEIGHT = 600;
 
 exports.LOCALHOST_ADDRESS = "localhost";
 exports.HTTP_PREFIX = "http://";
+exports.DEFAULT_PORT = 4690;
 
 exports.IPC_EVENTS = {
     // RTM: renderer to main

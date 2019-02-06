@@ -18,7 +18,7 @@ Game.prototype.setGameData = function(worldData) {
 }
 
 Game.prototype.getGameData = function() {
-    // Will return null if not set yet;
+    // Will return null if not set yet
     return this.data;
 }
 

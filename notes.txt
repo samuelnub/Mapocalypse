@@ -35,3 +35,9 @@
 29/1/19
     Available locally saved worlds are properly listed in start-configure's load section
     Need to work on saving newly created worlds (as they're the host)
+
+6/2/2019
+    Worlds now save properly and show up on the start-config load list
+    Also, some sanitisation on world creation inputs
+    Also, localisation has been imported from the old mapocalypse, hopefully i can integrate most of the old
+    code back into this project, but new this locale needs to be extended for the other menus

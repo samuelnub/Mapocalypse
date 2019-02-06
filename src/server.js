@@ -16,7 +16,7 @@ function Server() {
         this.sockets[socket.id] = socket;
         console.log("a user connected to the server with id " + socket.id);
 
-        socket.emit(consts.IO_EVENTS.HERES_GAME_DATA_STC, {});
+        socket.emit(consts.IO_EVENTS.HERES_GAME_DATA_STC, this.game.getGameData());
 
         socket.on("disconnect", () => {
             delete this.sockets[socket.id]
@@ -31,13 +31,30 @@ Server.prototype.getAllWorldNames = function() {
 }
 
 Server.prototype.setCurrentWorld = function(worldName) {
-    let world = this.worldsManager.get(worldName);
+    let world;
+    try {
+        world = this.worldsManager.get(worldName);
+    }
+    catch (err) {
+        // World doesn't exist on file, so let's create one
+        world = this.worldsManager.create(new worldData.WorldData({
+            name: worldName
+        }));
+    }
     this.game.setGameData(world);
-}
-
+};
 
 Server.prototype.listen = function(port) {
-    server.listen(port);
+    if(port != parseInt(port, 10)) {
+        port = consts.DEFAULT_PORT;
+    }
+    try {
+        server.listen(port);
+    }
+    catch (err) {
+        port = consts.DEFAULT_PORT;
+        server.listen(port);
+    }
     console.log("Server listening on port " + port);
 };
 
@@ -45,7 +62,7 @@ Server.prototype.close = function() {
     // closes the server and unsets game data and writes the worlds to file (just in case)
     server.close();
     console.log("Server closed");
-    this.worldsManager.writeToFile();
     this.game.unsetGameData();
+    this.worldsManager.writeToFile();
     console.log("Game data unset");
 };

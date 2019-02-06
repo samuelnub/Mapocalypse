@@ -7,8 +7,6 @@
     const gameLoadInfo = remote.getGlobal(consts.GLOBAL_NAMES.GAME_LOAD_INFO);
     remote.getGlobal(consts.GLOBAL_NAMES.CLEAR_GAME_LOAD_INFO)();
 
-    console.log(JSON.stringify(gameLoadInfo));
-
     let gameData = null;
     if(gameLoadInfo.isLocal) {
         remote.getGlobal(consts.GLOBAL_NAMES.SERVER).listen(gameLoadInfo.port);
