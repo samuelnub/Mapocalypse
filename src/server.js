@@ -6,6 +6,7 @@ const game = require("./game.js");
 const worldData = require("./world-data.js");
 
 // Here, the server object acts as a god object for the game logic
+// There may be a lot of second-hand abstracted functions
 exports.Server = Server;
 function Server() {
     this.sockets = {};
@@ -30,6 +31,10 @@ Server.prototype.getAllWorldNames = function() {
     return this.worldsManager.list();
 }
 
+Server.prototype.deleteWorld = function(worldName) {
+    this.worldsManager.delete(worldName);
+}
+
 Server.prototype.setCurrentWorld = function(worldName) {
     let world;
     try {
@@ -45,6 +50,7 @@ Server.prototype.setCurrentWorld = function(worldName) {
 };
 
 Server.prototype.listen = function(port) {
+    // I tried using helpers.sanitizePort() here but it just crashed...
     if(port != parseInt(port, 10)) {
         port = consts.DEFAULT_PORT;
     }

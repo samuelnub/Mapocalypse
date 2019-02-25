@@ -15,8 +15,10 @@ exports.MAIN_GLOBAL = global;
 
 ipc.on(consts.IPC_EVENTS.GAME_START_LOAD_RTM, (e, gameLoadInfo) => {
     global.MAPOCALYPSE_GAME_LOAD_INFO = gameLoadInfo;
-    global.MAPOCALYPSE_SERVER.setCurrentWorld(gameLoadInfo.worldName);
-    console.log("A game is initialising with worldname " + global.MAPOCALYPSE_GAME_LOAD_INFO.worldName);
+    if(gameLoadInfo.isLocal) {
+        global.MAPOCALYPSE_SERVER.setCurrentWorld(gameLoadInfo.worldName);
+        console.log("A game is initialising with worldname " + global.MAPOCALYPSE_GAME_LOAD_INFO.worldName);
+    }
     createWindow("MAPOCALYPSE_GAME_WINDOW", "game-client.html");
 });
 

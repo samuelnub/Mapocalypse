@@ -13,8 +13,11 @@
 
         <select id="load-worlds-select" SIZE="8">
         </select><br>
+        <p>Desired port:</p>
+        <input type="text" id="load-port-input"><br>
         <button id ="load-delete-btn">Delete</button>
-        <button id="load-btn">Load</button>
+        <button id="load-load-btn">Load</button>
+        
         <h2>New</h2>
 
         <p>World name:</p>
@@ -22,9 +25,17 @@
 
         <p>Desired port:</p>
         <input type="text" id="new-port-input"><br>
+        <p>If a world with the same name exists already, the existing world will be loaded instead.</p>
 
         <button id="new-btn">Start</button>
+
         <h2>Connect</h2>
+
+        <p>Address:</p>
+        <input type="text" id="connect-address-input"><br>
+
+        <p>Port:</p>
+        <input type="text" id="connect-port-input"><br>
 
         <button id="connect-btn">Connect</button>
     </body>

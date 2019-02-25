@@ -38,7 +38,7 @@ WorldsManager.prototype.create = function(params)
     // Follow the params of the WorldData structure
     if(this.worlds.hasOwnProperty(params[worldDataFormat.name])) {
         console.log("World " + params[worldDataFormat.name] + " already exists!");
-        params[worldDataFormat.name] = params[worldDataFormat.name] + "0";
+        params[worldDataFormat.name] += "0";
     }
     this.worlds[params[worldDataFormat.name]] = new WorldData(params);
     return this.worlds[params[worldDataFormat.name]]; // key: worldName, value: worldData (with name too)

@@ -41,3 +41,9 @@
     Also, some sanitisation on world creation inputs
     Also, localisation has been imported from the old mapocalypse, hopefully i can integrate most of the old
     code back into this project, but new this locale needs to be extended for the other menus
+
+25/2/2019
+    Start-config's Load section can initiate the world and delete worlds too
+    You can now connect! (Try getting your local ipv4 address, open multiple instances and get one to connect to the other).
+    Also, refactored gameLoadInfo a bit so now it's not a separate useless class.js, but rather a helper function.
+    Players.json has been added to keep track on the current/past players that have locally "logged in" to keep track of player entities/their states.

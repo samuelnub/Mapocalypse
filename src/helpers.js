@@ -1,4 +1,5 @@
 const locale = require("../data/localisation").locale;
+const consts = require("./consts");
 
 exports.draggableElement = draggableElement;
 function draggableElement(elmnt) {
@@ -40,6 +41,47 @@ function draggableElement(elmnt) {
     }
 }
 
+exports.createPlayerInfo = createPlayerInfo;
+function createPlayerInfo(name, uuid) {
+    return {
+        name: name,
+        uuid: uuid || uuid()
+    };
+}
+
+exports.getActivePlayer = getActivePlayer;
+function getActivePlayerInfo() {
+    try {
+        return require("../data/players.json").active;
+    }
+    catch {
+        console.log("Unable to get the active player info");
+        return null;
+    }
+}
+
+exports.createGameLoadInfo = createGameLoadInfo;
+function createGameLoadInfo(address, worldName) {
+        // This class helps store game initialisation info in the global setting so that
+    // the game window can read it from the start-config screen
+    // Do not change variables - only get() them
+    // params:
+    //      address: string (The address you want to connect to)
+    //      worldName: string (leave to an empty string if its either a new world or external)
+
+    let address = address; // includes the port
+    let port = address.split(":")[address.split(":").length-1];
+    let isLocal = address.indexOf(consts.LOCALHOST_ADDRESS) !== -1;
+    let worldName = (isLocal ? worldName : "");
+
+    return {
+        address: address,
+        port: port,
+        isLocal: isLocal,
+        worldName: worldName
+    };
+}
+
 exports.sanitizeInput = sanitizeInput;
 function sanitizeInput(message, charLimit) {
     if (typeof message == "object") {
@@ -56,6 +98,28 @@ function sanitizeInput(message, charLimit) {
     }
     return message.replace(/</g, "&lt;"); // TODO: either whitelist acceptable formatting tags, or blacklist bad ones
     // (?!b|\/b|em|\/em|i|\/i|small|\/small|strong|\/strong|sub|\/sub|sup|\/sup|ins|\/ins|del|\/del|mark|\/mark|a|\/a|img|\/img|li|\/li|h|\/h|p|\/p|tt|\/tt|code|\/code|br|\/br|video|\/video|source|\/source)
+}
+
+exports.sanitizeAddress = sanitizeAddress;
+function sanitizeAddress(address) {
+    // ipv4 and ipv6 compatible!
+    // Taken from https://stackoverflow.com/questions/23483855/javascript-regex-to-validate-ipv4-and-ipv6-address-no-hostnames
+    var ipRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$|^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/;
+    if(!ipRegex.test(address)) {
+        return consts.LOCALHOST_ADDRESS;
+    }
+    return address;
+}
+
+exports.sanitizePort = sanitizePort;
+function sanitizePort(port) {
+    if(port != parseInt(port, 10)) {
+        port = consts.DEFAULT_PORT;
+    }
+    else if(port < 0 || port > 65535) {
+        port = consts.DEFAULT_PORT;
+    }
+    return port;
 }
 
 exports.createButton = createButton;
