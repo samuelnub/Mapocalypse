@@ -1,6 +1,18 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --accent-colour: black;
+    margin: 0px;
+}
+
+/*game-client.html stuff*/
+#main-div {
+    margin: 0px;
+}
+
+#map-div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 button {

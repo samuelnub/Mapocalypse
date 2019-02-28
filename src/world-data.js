@@ -76,11 +76,5 @@ WorldsManager.prototype.delete = function(worldName) {
 };
 
 WorldsManager.prototype.writeToFile = function() {
-    fs.writeFile(path.resolve(__dirname, this.worldsFilepath), JSON.stringify(this.worlds), (err) => {
-        if(err) {
-            throw err;
-            return;
-        }
-        console.log("Wrote the worlds back to the file @ " + this.worldsFilepath);
-    });
+    helpers.writeToFile(this.worldsFilepath, this.worlds);
 };

@@ -47,3 +47,9 @@
     You can now connect! (Try getting your local ipv4 address, open multiple instances and get one to connect to the other).
     Also, refactored gameLoadInfo a bit so now it's not a separate useless class.js, but rather a helper function.
     Players.json has been added to keep track on the current/past players that have locally "logged in" to keep track of player entities/their states.
+
+27/2/2019
+    Google maps api must be loaded >before< the webpage fully loads, or else you can't reference google objects in your code.
+    Made progress, a map now loads (GameMap), but you can't dynamically change the key within the game-client page.
+    (my school google account's google maps api key doesn't work because it's a newer account
+    which requires billing info to work) So I'm just using my old personal mapocalypse api key

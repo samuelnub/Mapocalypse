@@ -1,7 +1,13 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="ui.css">
+        <script id="google-maps-api-script"></script>
         <script>
+            const consts = require("../consts.js");
+            let apiScript = document.getElementById("google-maps-api-script");
+            let key = require("../helpers.js").getGoogleMapsAPIKey();
+            apiScript.src = consts.GOOGLE_MAPS_API_URL + key + consts.GOOGLE_MAPS_API_LIBS;
+
             window.onload = () => {
                 require("../game-client.js");
             };

@@ -1,5 +1,7 @@
 const locale = require("../data/localisation").locale;
 const consts = require("./consts");
+const fs = require("fs");
+const path = require("path");
 
 exports.draggableElement = draggableElement;
 function draggableElement(elmnt) {
@@ -49,13 +51,24 @@ function createPlayerInfo(name, uuid) {
     };
 }
 
-exports.getActivePlayer = getActivePlayer;
+exports.getActivePlayerInfo = getActivePlayerInfo;
 function getActivePlayerInfo() {
     try {
         return require("../data/players.json").active;
     }
     catch {
         console.log("Unable to get the active player info");
+        return null;
+    }
+}
+
+exports.getGoogleMapsAPIKey = getGoogleMapsAPIKey;
+function getGoogleMapsAPIKey() {
+    try {
+        return require("../data/keys.json").googleMapsAPI;
+    }
+    catch {
+        console.log("Unable to get the Google Maps API key");
         return null;
     }
 }
@@ -69,16 +82,16 @@ function createGameLoadInfo(address, worldName) {
     //      address: string (The address you want to connect to)
     //      worldName: string (leave to an empty string if its either a new world or external)
 
-    let address = address; // includes the port
-    let port = address.split(":")[address.split(":").length-1];
-    let isLocal = address.indexOf(consts.LOCALHOST_ADDRESS) !== -1;
-    let worldName = (isLocal ? worldName : "");
+    let tempAddress = address; // includes the port
+    let tempPort = address.split(":")[address.split(":").length-1];
+    let tempIsLocal = address.indexOf(consts.LOCALHOST_ADDRESS) !== -1;
+    let tempWorldName = (tempIsLocal ? worldName : "");
 
     return {
-        address: address,
-        port: port,
-        isLocal: isLocal,
-        worldName: worldName
+        address: tempAddress,
+        port: tempPort,
+        isLocal: tempIsLocal,
+        worldName: tempWorldName
     };
 }
 
@@ -120,6 +133,30 @@ function sanitizePort(port) {
         port = consts.DEFAULT_PORT;
     }
     return port;
+}
+
+exports.writeToFile = writeToFile;
+function writeToFile(relativePath, obj, callback) {
+    // Params:
+    //  relativePath: string to the relative data path (usually json), eg ../data/players.json
+    //  obj: object to stringify and then write to file
+    //  callback: Optional callback with the error (will not pass anything if there was no error)
+    fs.writeFile(path.resolve(__dirname, relativePath), JSON.stringify(obj), (err) => {
+        if(typeof callback == "function") {
+            if(err) {
+                console.log(err + "Occurred whilst trying to write to file " + relativePath);
+                if(typeof callback == "function") {
+                    callback(err);
+                }
+            }
+            else {
+                console.log("Successfully wrote to file " + relativePath);
+                if(typeof callback == "function") {
+                    callback();
+                }
+            }
+        }
+    });
 }
 
 exports.createButton = createButton;
