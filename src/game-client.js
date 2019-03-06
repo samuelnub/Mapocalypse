@@ -31,23 +31,24 @@ function GameClient(gameLoadInfo) {
     this.ioClient = null;
     this.mainDiv = document.getElementById("main-div");
     this.data = null; // world data
+    this.ourPlayerInfo = helpers.getActivePlayerInfo(); // just caching it here cuz it's not gonna modify anyway
     this.playerInfos = {} // key: socket.id, value: playerInfo
 
-    this.gui = new GameGUI.GameGUI(this);
-    this.map = new GameMap.GameMap(this);
+    this.gui = null;
+    this.map = null;
 
-    setTimeout(() => { this.setupIoConnection(gameLoadInfo); }, 1); // for some dumb reason, the constructor cant call prototype functions until it's fully initialised
+    setTimeout(() => {
+        this.stinkyConstructor(gameLoadInfo);
+    }, 1);
 }
 
-GameClient.prototype.setupIoConnection = function (gameLoadInfo) {
-    // Just a separate function to setup connecting this.ioClient and
-    // initialising all the transfers and listeners
-    // Params:
-    //  gameLoadInfo: gameLoadInfo instance passed on from our constructor
+GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
+    // because this particular class is a big DUMB and can't have prototype functions called in the constructor
+    // Setting up ioClient and its initial data transfers with the server
     this.ioClient = io.connect(consts.HTTP_PREFIX + gameLoadInfo.address);
 
     this.ioClient.emit(consts.IO_EVENTS.HERES_MY_PLAYER_INFO_CTS, helpers.getActivePlayerInfo());
-    
+
     this.ioClient.on(consts.IO_EVENTS.HERES_GAME_DATA_STC, (data) => {
         console.log(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).players);
         this.data = data;
@@ -59,7 +60,7 @@ GameClient.prototype.setupIoConnection = function (gameLoadInfo) {
     });
 
     this.ioClient.on(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
-        if(Object.keys(playerPacket)[0] == this.ioClient.id) {
+        if (Object.keys(playerPacket)[0] == this.ioClient.id) {
             return;
         }
         Object.assign(this.playerInfos, playerPacket);
@@ -72,6 +73,28 @@ GameClient.prototype.setupIoConnection = function (gameLoadInfo) {
         console.log("Player disconnected. Remaining players:");
         console.log(this.playerInfos);
     });
+
+
+    this.gui = new GameGUI.GameGUI(this);
+    this.map = new GameMap.GameMap(this);
+}
+
+GameClient.prototype.getOurPlayerInfo = function () {
+    return this.ourPlayerInfo;
+}
+
+GameClient.prototype.getOurSocketId = function () {
+    return this.ioClient.id;
+}
+
+GameClient.prototype.getPlayerInfoFromSocketId = function (id) {
+    try {
+        return this.playerInfos[id];
+    }
+    catch {
+        console.log("That id " + id + " doesn't exist as far as I know...");
+        return null;
+    }
 }
 
 GameClient.prototype.ioEmit = function (type, data) {

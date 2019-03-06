@@ -73,3 +73,4 @@
     Just committing this so i can pull it from my other PC 
     the joining process works! sending playerPackets to and fro' (playerPacket is just a single-key object
     with the key being the socket.id, and the value being playerInfo)
+    public chatting works!

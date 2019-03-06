@@ -1,8 +1,8 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --accent-colour: rgba(0,0,0,0.5);
-    --background-colour: rgba(255,255,255,0.3);
-    --background-colour-grey: rgba(127,127,127,0.3);
+    --background-colour: rgba(255,255,255,0.2);
+    --background-colour-grey: rgba(127,127,127,0.2);
     margin: 0px;
 }
 

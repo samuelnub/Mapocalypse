@@ -76,7 +76,7 @@ function getGoogleMapsAPIKey() {
 
 exports.createGameLoadInfo = createGameLoadInfo;
 function createGameLoadInfo(address, worldName) {
-        // This class helps store game initialisation info in the global setting so that
+    // This class helps store game initialisation info in the global setting so that
     // the game window can read it from the start-config screen
     // Do not change variables - only get() them
     // params:
@@ -93,6 +93,20 @@ function createGameLoadInfo(address, worldName) {
         port: tempPort,
         isLocal: tempIsLocal,
         worldName: tempWorldName
+    };
+}
+
+exports.createChatPacket = createChatPacket;
+function createChatPacket(idFrom, text, idTo) {
+    // A wrapped up factory for chat messages
+    // Params:
+    //  idFrom: string socket.id that's the sender
+    //  text: string message
+    //  idTo: optional string socket.id that's the receiver (optional if it was a global public chat)
+    return {
+        idFrom: idFrom,
+        text: text,
+        idTo: idTo
     };
 }
 

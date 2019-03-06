@@ -1,3 +1,4 @@
+const consts = require("./consts.js");
 const helpers = require("./helpers.js");
 
 exports.GameGUI = GameGUI;
@@ -25,11 +26,32 @@ function GameGUI(gameClient) {
     this.chatInput.id = "chat-input";
     this.chatDiv.appendChild(this.chatInput);
     const chatMsgCharLimit = 420;
+    let ourSendChat = function() {
+        this.sendChat(helpers.sanitizeInput(this.chatInput.value, chatMsgCharLimit));
+        this.chatInput.value = "";
+        this.chatLinesDiv.scrollTop = this.chatLinesDiv.scrollHeight;
+    }.bind(this);
+    this.chatInput.addEventListener("keyup", (e) => {
+        if (e.keyCode == 13) {
+            ourSendChat();
+        }
+    },false);
     this.chatEnterBtn = helpers.createButton("Enter", (e) => {
-        this.sendChat(helpers.sanitizeInput(this.chatInput.value, chatMsgCharLimit), true);
+        ourSendChat();
     });
     this.chatEnterBtn.id = "chat-enter-btn";
     this.chatDiv.appendChild(this.chatEnterBtn);
+
+    // Listening for our ioClient receiving a chat message event
+    this.gameClient.ioOn(consts.IO_EVENTS.INCOMING_PUBLIC_CHAT_STC, (chatPacket) => {
+        if(chatPacket.idFrom == this.gameClient.getOurSocketId()) {
+            return;
+        }
+        this.logChat(
+            this.gameClient.getPlayerInfoFromSocketId(chatPacket.idFrom).name,
+            chatPacket.text
+        );
+    });
 
     console.log("GameGUI initialised!");
 }
@@ -44,10 +66,8 @@ GameGUI.prototype.logChat = function(title, text) {
     let chatMsgDiv = document.createElement("div");
     chatMsgDiv.classList.add("chat-msg-div");
 
-    let logChat = function() {
-        chatMsgDiv.innerHTML = "<p>" + helpers.sanitizeInput(title) + "</p><p>" + helpers.sanitizeInput(text) + "</p>";
-        this.chatLinesDiv.appendChild(chatMsgDiv);
-    }.bind(this);
+    chatMsgDiv.innerHTML = "<p>" + helpers.sanitizeInput(title) + "</p><p>" + helpers.sanitizeInput(text) + "</p>";
+    this.chatLinesDiv.appendChild(chatMsgDiv);
 
     return chatMsgDiv;
 }
@@ -56,14 +76,15 @@ GameGUI.prototype.sendChat = function(text, to) {
     // Send a chat to the chat div and possibly to others.
     // Params:
     //  text: string you want to send to chat (will not sanitize here! sanitize it yourself.)
-    //  to: var: false=to self (good for error logging), true=to everyone, string=id to an existing socket
-
-    if (typeof to == "boolean" && to === true) {
+    //  to: var: optional. String: socket.id to private message to (TODO)
+    if (to == null || typeof to != "string") {
         // TODO: send to others
-        this.logChat();
-    }
-    else if (typeof to == "boolean" && to === false) {
-        this.logChat();
+        this.logChat(this.gameClient.getOurPlayerInfo().name, text);
+        this.gameClient.ioEmit(consts.IO_EVENTS.SEND_PUBLIC_CHAT_CTS, helpers.createChatPacket(
+            this.gameClient.getOurSocketId(),
+            text,
+            to // redundant really
+        ));
     }
     else if (typeof to == "string") {
         this.logChat();

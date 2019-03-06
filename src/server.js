@@ -49,6 +49,11 @@ Server.prototype.setupIoTransfers = function () {
             delete this.players[socket.id];
             console.log("user disconnected with id " + socket.id);
         });
+
+        // Other listeners which are socket-specific (so most of them...)
+        socket.on(consts.IO_EVENTS.SEND_PUBLIC_CHAT_CTS, (chatPacket) => {
+            this.io.emit(consts.IO_EVENTS.INCOMING_PUBLIC_CHAT_STC, chatPacket);
+        });
     });
 }
 
