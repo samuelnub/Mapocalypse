@@ -53,3 +53,19 @@
     Made progress, a map now loads (GameMap), but you can't dynamically change the key within the game-client page.
     (my school google account's google maps api key doesn't work because it's a newer account
     which requires billing info to work) So I'm just using my old personal mapocalypse api key
+
+28/2/2019
+    functions in server and gameclient to more easily transmit/send data
+
+4/3/2019
+    Enabled experimental web features in browserwindow creation... for blurred divs lol
+    a lotta CSS
+    On connection, client will send player info to server, and the server will update this.players
+    and broadcast the new player's existance to the others
+    Also on disconnect, remember to remove them.
+    For some reason, GameClient can't call its own prototype functions in the constructor... it works in server()...
+
+6/3/2019
+    Updated helpers.getActivePlayerInfo() so that it reads from RAM from the main process
+    as opposed to reading it from file which could cause clashes
+    Just committing this so i can pull it from my other PC 

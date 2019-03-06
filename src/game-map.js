@@ -6,7 +6,7 @@ function GameMap(gameClient) {
     // Plus all entity renderings and other bits and bobs
     // Params:
     //  gameClient: GameClient instance
-    this.gameClient = gameClient
+    this.gameClient = gameClient;
 
     this.markers = {};
 
@@ -33,4 +33,6 @@ function GameMap(gameClient) {
     this.placesService = new google.maps.places.PlacesService(this.map);
 
     this.gameClient.mainDiv.appendChild(this.mapDiv);
+
+    console.log("GameMap initialised!");
 }

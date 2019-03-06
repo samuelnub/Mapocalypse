@@ -2,6 +2,7 @@
     const remote = require("electron").remote;
     const consts = require("./consts.js");
     const helpers = require("./helpers.js");
+    const ipc = require("electron").ipcRenderer;
 
     const maxPlayerNameLength = 32;
     const playersFilepath = "../data/players.json";
@@ -18,7 +19,8 @@
             players.all[playerName] = helpers.createPlayerInfo(playerName, helpers.uuid()); // The entity ID that will be used
         }
         players.active = players.all[playerName];
-
+        
+        ipc.emit(consts.IPC_EVENTS.HERES_ACTIVE_PLAYER_INFO_RTM, players.active);
         helpers.writeToFile(playersFilepath, players);
 
         remote.getCurrentWindow().loadFile(consts.WEB_FILEPATH + "gui/start-config.html");

@@ -1,8 +1,68 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --accent-colour: black;
+    --accent-colour: rgba(0,0,0,0.5);
+    --background-colour: rgba(255,255,255,0.3);
+    --background-colour-grey: rgba(127,127,127,0.3);
     margin: 0px;
 }
+
+div {
+    margin: 0px;
+}
+
+p {
+    margin: 0px;
+}
+
+button {
+    background-color: transparent;
+    border: solid 2px var(--accent-colour);
+    font-size: 1.0em;
+    padding: 8px;
+    overflow: hidden;
+
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--background-colour);
+    border: solid 4px var(--accent-colour);
+    padding: 6px;
+}
+
+input {
+    background-color: transparent;
+    border: solid 2px var(--accent-colour);
+    font-size: 1.0em;
+    padding: 8px;
+
+    transition: all 0.2s ease;
+}
+
+input:selection {
+    background-color: var(--background-colour);
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: var(--background-colour); 
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: var(--background-colour-grey); 
+    transition: all 0.2s ease;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-colour); 
+  }
 
 /*game-client.html stuff*/
 #main-div {
@@ -13,18 +73,67 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
+    z-index: 10;
 }
 
-button {
-    background-color: transparent;
-    border: solid 2px var(--accent-colour);
-    font-size: 1.1em;
-    padding: 8px;
+/*game-gui.js elements*/
+#main-gui-div {
+    position: absolute;
+    background-color: var(--background-colour);
+    backdrop-filter: blur(4px);
+    width: 25%;
+    height: 100%;
+    z-index: 20;
 
-    transition: all 0.2s ease;
+    overflow: hidden;
 }
 
-button:hover {
-    border: solid 4px var(--accent-colour);
-    padding: 6px;
+#chat-div {
+    position: absolute;
+    width: 100%;
+    height: calc(100%/3);
+    bottom: 0px;
+}
+
+#chat-lines-div {
+    position: absolute;
+    width: 100%;
+    height: 80%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.chat-msg-div {
+    position: relative;
+    width: 100%;
+    font-size: 0.8em;
+    padding: 4px;
+}
+
+.chat-msg-div:nth-child(even) {
+    background-color: var(--background-colour);
+}
+
+.chat-msg-div:nth-child(odd) {
+    background-color: var(--background-colour-grey);
+}
+
+.chat-msg-div > p:nth-child(odd) { /*Quick hacky way to get the top line, the sender*/
+    font-weight: bold;
+}
+
+#chat-input {
+    position: absolute;
+    height: 20% !important;
+    width: 70% !important;
+    bottom: 0px;
+    left: 0px;
+}
+
+#chat-enter-btn {
+    position: absolute;
+    height: 20% !important;
+    width: 30% !important;
+    bottom: 0px;
+    right: 0px;
 }

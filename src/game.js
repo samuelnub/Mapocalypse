@@ -10,6 +10,8 @@ function Game(server) {
 Game.prototype.setGameData = function(worldData) {
     // This is the distinction between world data and game data - the game version is the current live one.
     // Will throw error if this.data isn't null
+    // Params:
+    //  worldData: WorldData instance to load in
     if(this.data == null) {
         this.data = worldData;
         return;

@@ -54,7 +54,8 @@ function createPlayerInfo(name, uuid) {
 exports.getActivePlayerInfo = getActivePlayerInfo;
 function getActivePlayerInfo() {
     try {
-        return require("../data/players.json").active;
+        // not very efficient but hey
+        return require("electron").remote.getGlobal(consts.GLOBAL_NAMES.ACTIVE_PLAYER_INFO);
     }
     catch {
         console.log("Unable to get the active player info");

@@ -4,6 +4,7 @@ const app = electron.app;
 const Server = require("./server").Server;
 const ipc = electron.ipcMain;
 
+global.MAPOCALYPSE_ACTIVE_PLAYER_INFO = null;
 global.MAPOCALYPSE_SERVER = new Server();
 global.MAPOCALYPSE_MENU_WINDOW = null;
 global.MAPOCALYPSE_GAME_WINDOW = null;
@@ -13,6 +14,9 @@ global.MAPOCALYPSE_CLEAR_GAME_LOAD_INFO = function() {
 };
 exports.MAIN_GLOBAL = global;
 
+ipc.on(consts.IPC_EVENTS.HERES_ACTIVE_PLAYER_INFO_RTM, (e, playerInfo) => {
+    global.MAPOCALYPSE_ACTIVE_PLAYER_INFO = playerInfo;
+});
 ipc.on(consts.IPC_EVENTS.GAME_START_LOAD_RTM, (e, gameLoadInfo) => {
     global.MAPOCALYPSE_GAME_LOAD_INFO = gameLoadInfo;
     if(gameLoadInfo.isLocal) {
@@ -31,7 +35,8 @@ function createWindow(windowVarName, htmlPage) {
     }
     global[windowVarName] = new electron.BrowserWindow({
         width: consts.MAIN_MENU_WIDTH,
-        height: consts.MAIN_MENU_HEIGHT
+        height: consts.MAIN_MENU_HEIGHT,
+        webPreferences: {experimentalFeatures: true} // TEST: just to see if new features such as css backdrop-filter work lol
     });
     global[windowVarName].loadFile(consts.WEB_FILEPATH + "gui/" + htmlPage);
     global[windowVarName].webContents.openDevTools();
