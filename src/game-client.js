@@ -6,7 +6,6 @@ const locale = require("../data/localisation.js").locale;
 
 const GameGUI = require("./game-gui.js");
 const GameMap = require("./game-map.js");
-global.gameClient = null;
 
 (() => { // This IIFE doesn't need to be here, but it's just nice to segment the code
     const gameLoadInfo = remote.getGlobal(consts.GLOBAL_NAMES.GAME_LOAD_INFO);
@@ -19,7 +18,8 @@ global.gameClient = null;
             remote.getGlobal(consts.GLOBAL_NAMES.SERVER).close();
         });
     }
-    global.gameClient = new GameClient(gameLoadInfo);
+    const gameClient = new GameClient(gameLoadInfo);
+    window.gameClient = gameClient;
 })();
 
 exports.GameClient = GameClient;
@@ -47,24 +47,28 @@ GameClient.prototype.setupIoConnection = function (gameLoadInfo) {
     this.ioClient = io.connect(consts.HTTP_PREFIX + gameLoadInfo.address);
 
     this.ioClient.emit(consts.IO_EVENTS.HERES_MY_PLAYER_INFO_CTS, helpers.getActivePlayerInfo());
-
-    this.ioClient.on(consts.IO_EVENTS.HERES_CONNECTED_PLAYER_INFOS_STC, (data) => {
-        this.playerInfos = data;
-    });
-
+    
     this.ioClient.on(consts.IO_EVENTS.HERES_GAME_DATA_STC, (data) => {
+        console.log(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).players);
         this.data = data;
         console.log("Upon loading, this game data was received: " + JSON.stringify(this.data));
     });
 
-    this.ioClient.on(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (data) => {
-        Object.assign(this.playerInfos, data);
-        console.log("Player connected:");
-        console.log(data);
+    this.ioClient.on(consts.IO_EVENTS.HERES_CONNECTED_PLAYER_INFOS_STC, (playerInfos) => {
+        this.playerInfos = playerInfos;
     });
 
-    this.ioClient.on(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_STC, (data) => {
-        delete this.playerInfos[Object.keys(data)[0]]; // just some way to get rid of an object member
+    this.ioClient.on(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
+        if(Object.keys(playerPacket)[0] == this.ioClient.id) {
+            return;
+        }
+        Object.assign(this.playerInfos, playerPacket);
+        console.log("Player connected:");
+        console.log(playerPacket);
+    });
+
+    this.ioClient.on(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
+        delete this.playerInfos[Object.keys(playerPacket)[0]]; // just some way to get rid of an object member
         console.log("Player disconnected. Remaining players:");
         console.log(this.playerInfos);
     });

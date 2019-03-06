@@ -20,7 +20,7 @@
         }
         players.active = players.all[playerName];
         
-        ipc.emit(consts.IPC_EVENTS.HERES_ACTIVE_PLAYER_INFO_RTM, players.active);
+        ipc.send(consts.IPC_EVENTS.HERES_ACTIVE_PLAYER_INFO_RTM, players.active);
         helpers.writeToFile(playersFilepath, players);
 
         remote.getCurrentWindow().loadFile(consts.WEB_FILEPATH + "gui/start-config.html");

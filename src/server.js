@@ -24,12 +24,11 @@ Server.prototype.setupIoTransfers = function () {
         };
         this.players[socket.id].socket = socket;
         console.log("a user connected to the server with id " + socket.id);
-
         socket.emit(consts.IO_EVENTS.HERES_GAME_DATA_STC, this.game.getGameData());
 
-        socket.on(consts.IO_EVENTS.HERES_MY_PLAYER_INFO_CTS, (data) => {
-            this.players[socket.id].playerInfo = data;
-            console.log("Socket " + socket.id + " has player info of " + JSON.stringify(data));
+        socket.on(consts.IO_EVENTS.HERES_MY_PLAYER_INFO_CTS, (playerInfo) => {
+            this.players[socket.id].playerInfo = playerInfo;
+            console.log("Socket " + socket.id + " has player info of " + JSON.stringify(playerInfo));
 
             let playerInfos = {};
             for (let key of Object.keys(this.players)) {
@@ -38,27 +37,16 @@ Server.prototype.setupIoTransfers = function () {
             socket.emit(consts.IO_EVENTS.HERES_CONNECTED_PLAYER_INFOS_STC, playerInfos);
 
             // Let everyone else connected know that he's connected
-            for (let key of Object.keys(this.players)) {
-                if (key == socket.id) {
-                    continue;
-                }
-                this.players[key].socket.emit(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, {
-                    [socket.id]: this.player[socket.id].playerInfo
-                });
-            }
+            let playerPacket = {};
+            playerPacket[socket.id] = playerInfo
+            this.io.emit(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, playerPacket);
         });
 
         socket.on("disconnect", () => {
-            for (let key of Object.keys(this.players)) {
-                if (key == socket.id) {
-                    continue;
-                }
-                this.players[key].socket.emit(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_STC, {
-                    [socket.id]: this.player[socket.id].playerInfo
-                });
-            }
-
-            delete this.players[socket.id]
+            let playerPacket = {};
+            playerPacket[socket.id] = this.players[socket.id].playerInfo;
+            this.io.emit(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, playerPacket);
+            delete this.players[socket.id];
             console.log("user disconnected with id " + socket.id);
         });
     });

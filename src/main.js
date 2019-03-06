@@ -15,6 +15,7 @@ global.MAPOCALYPSE_CLEAR_GAME_LOAD_INFO = function() {
 exports.MAIN_GLOBAL = global;
 
 ipc.on(consts.IPC_EVENTS.HERES_ACTIVE_PLAYER_INFO_RTM, (e, playerInfo) => {
+    console.log("Setting the current active player info in globals...");
     global.MAPOCALYPSE_ACTIVE_PLAYER_INFO = playerInfo;
 });
 ipc.on(consts.IPC_EVENTS.GAME_START_LOAD_RTM, (e, gameLoadInfo) => {
