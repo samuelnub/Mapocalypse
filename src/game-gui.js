@@ -1,5 +1,6 @@
 const consts = require("./consts.js");
 const helpers = require("./helpers.js");
+const locale = require("../data/localisation.js").locale;
 
 exports.GameGUI = GameGUI;
 function GameGUI(gameClient) {
@@ -9,9 +10,13 @@ function GameGUI(gameClient) {
     //  gameClient: GameClient instance
     this.gameClient = gameClient;
 
+    this.mainGUIBackgroundDiv = document.createElement("div");
+    this.mainGUIBackgroundDiv.id = "main-gui-background-div";
+    this.gameClient.mainDiv.appendChild(this.mainGUIBackgroundDiv);
+
     this.mainGUIDiv = document.createElement("div");
     this.mainGUIDiv.id = "main-gui-div";
-    this.gameClient.mainDiv.appendChild(this.mainGUIDiv);
+    this.mainGUIBackgroundDiv.appendChild(this.mainGUIDiv);
 
     // setup chat window
     this.chatDiv = document.createElement("div");
@@ -27,9 +32,11 @@ function GameGUI(gameClient) {
     this.chatDiv.appendChild(this.chatInput);
     const chatMsgCharLimit = 420;
     let ourSendChat = function() {
+        if(this.chatInput.value == "") {
+            return;
+        }
         this.sendChat(helpers.sanitizeInput(this.chatInput.value, chatMsgCharLimit));
         this.chatInput.value = "";
-        this.chatLinesDiv.scrollTop = this.chatLinesDiv.scrollHeight;
     }.bind(this);
     this.chatInput.addEventListener("keyup", (e) => {
         if (e.keyCode == 13) {
@@ -53,21 +60,43 @@ function GameGUI(gameClient) {
         );
     });
 
+    this.gameClient.ioOn(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
+        if(helpers.getFirstKey(playerPacket) == this.gameClient.getOurSocketId()) {
+            return;
+        }
+        this.logChat(
+            locale.general.programName,
+            helpers.getFirstKeysValue(playerPacket).name + " has connected!",
+            true
+        );
+    });
+
+    this.gameClient.ioOn(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
+        this.logChat(
+            locale.general.programName,
+            helpers.getFirstKeysValue(playerPacket).name + " has connected!",
+            true
+        );
+    });
+
     console.log("GameGUI initialised!");
 }
 
-GameGUI.prototype.logChat = function(title, text) {
+GameGUI.prototype.logChat = function(title, text, isAdmin) {
     // A general function to put a message in the chat list
     // good for logging.
     // returns the div
     // Params:
     //  title: string of the header of the message (usually the sender name)
     //  text: string message.
+    //  isAdmin: bool, if true, title will be red
     let chatMsgDiv = document.createElement("div");
     chatMsgDiv.classList.add("chat-msg-div");
 
-    chatMsgDiv.innerHTML = "<p>" + helpers.sanitizeInput(title) + "</p><p>" + helpers.sanitizeInput(text) + "</p>";
+    chatMsgDiv.innerHTML = "<p" + (isAdmin != null && isAdmin == true ? " style=\"color:var(--solid-red)\"" : "") + ">" + helpers.sanitizeInput(title) + "</p><p>" + helpers.sanitizeInput(text) + "</p>";
     this.chatLinesDiv.appendChild(chatMsgDiv);
+
+    this.chatLinesDiv.scrollTop = this.chatLinesDiv.scrollHeight;
 
     return chatMsgDiv;
 }

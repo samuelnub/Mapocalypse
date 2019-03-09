@@ -1,4 +1,6 @@
-
+const helpers = require("./helpers.js");
+const locale = require("../data/localisation.js").locale;
+const SlidingMarker = require("marker-animate-unobtrusive");
 
 exports.GameMap = GameMap;
 function GameMap(gameClient) {
@@ -35,4 +37,43 @@ function GameMap(gameClient) {
     this.gameClient.mainDiv.appendChild(this.mapDiv);
 
     console.log("GameMap initialised!");
+}
+
+GameMap.prototype.createMarker = function(params) {
+    // Create a marker and put it in this.marker pool
+    // Params object:
+    //  position: {lat:num,lng:num} or google.maps.LatLng() position
+    //  id: string (entity most likely)
+    //  icon: string (just the icon name from ./data/icons/)
+    //  title: string tooltip, entity/playername
+    //  onClickCallback: function(event), with event containing click event info (+latLng!)
+    //  animDuration: (optional) purely visual - how long the animation duration should be
+
+    let marker = new SlidingMarker({
+        position: params.position || new google.maps.LatLng(0,0),
+        icon: {
+            url: locale.files.iconsPath + (params.icon ? params.icon : locale.files.icons.unknown) + locale.files.iconFiletype
+        },
+        title: params.title || locale.general.nothing,
+        map: this.map
+    });
+    marker.id = params.id || helpers.uuid();
+    if(typeof params.onClickCallback == "function") {
+        marker.addListener("click", () => {
+            params.onClickCallback(e);
+        });
+    }
+}
+
+GameMap.prototype.removeMarker = function(identifier) {
+    // Params:
+    //  identifier: string or object, either just the id or the marker object itself
+    if(typeof identifier == "string") {
+        this.markers[identifier].setMap(null);
+        delete this.markers[identifier];
+    }
+    else if(typeof identifier != "string" && identifier != null) {
+        this.markers[identifier.id].setMap(null);
+        delete this.markers[identifier];
+    }
 }

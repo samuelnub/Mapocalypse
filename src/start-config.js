@@ -4,6 +4,9 @@
     const ipc = require("electron").ipcRenderer;
     const helpers = require("./helpers.js");
 
+    const Wallpapers = require("./wallpapers.js");
+    let wallpapers = new Wallpapers.Wallpapers(0);
+
     // "Load" code
     let loadWorldsSelect = document.getElementById("load-worlds-select");
     function updateLoadWorldsSelect() {

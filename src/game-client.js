@@ -60,16 +60,17 @@ GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
     });
 
     this.ioClient.on(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
-        if (Object.keys(playerPacket)[0] == this.ioClient.id) {
+        if (helpers.getFirstKey(playerPacket) == this.ioClient.id) {
             return;
         }
-        Object.assign(this.playerInfos, playerPacket);
+        // cool way to do object.assign:
+        this.playerInfos = {...this.playerInfos, ...playerPacket};
         console.log("Player connected:");
         console.log(playerPacket);
     });
 
     this.ioClient.on(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
-        delete this.playerInfos[Object.keys(playerPacket)[0]]; // just some way to get rid of an object member
+        delete this.playerInfos[helpers.getFirstKey(playerPacket)]; // just some way to get rid of an object member
         console.log("Player disconnected. Remaining players:");
         console.log(this.playerInfos);
     });

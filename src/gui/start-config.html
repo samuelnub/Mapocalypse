@@ -1,13 +1,16 @@
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="ui.css">
-        <script>
-            window.onload = () => {
-                require("../start-config.js");
-            };
-        </script>
-    </head>
-    <body>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="ui.css">
+    <script>
+        window.onload = () => {
+            require("../start-config.js");
+        };
+    </script>
+</head>
+
+<body>
+    <div id="menu-div">
         <h1>Configure game</h1>
         <h2>Load</h2>
 
@@ -15,9 +18,9 @@
         </select><br>
         <p>Desired port:</p>
         <input type="text" id="load-port-input"><br>
-        <button id ="load-delete-btn">Delete</button>
+        <button id="load-delete-btn">Delete</button>
         <button id="load-load-btn">Load</button>
-        
+
         <h2>New</h2>
 
         <p>World name:</p>
@@ -38,5 +41,7 @@
         <input type="text" id="connect-port-input"><br>
 
         <button id="connect-btn">Connect</button>
-    </body>
+    </div>
+</body>
+
 </html>

@@ -4,6 +4,9 @@
     const helpers = require("./helpers.js");
     const ipc = require("electron").ipcRenderer;
 
+    const Wallpapers = require("./wallpapers.js");
+    let wallpapers = new Wallpapers.Wallpapers(0);
+
     const maxPlayerNameLength = 32;
     const playersFilepath = "../data/players.json";
 

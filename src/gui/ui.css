@@ -1,6 +1,9 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --solid-red: rgb(200,25,25);
     --accent-colour: rgba(0,0,0,0.5);
+    --accent-red: rgba(200,25,25,0.5);
+    --accent-white: rgba(255,255,255,0.5);
     --background-colour: rgba(255,255,255,0.2);
     --background-colour-grey: rgba(127,127,127,0.2);
     margin: 0px;
@@ -20,11 +23,12 @@ button {
     font-size: 1.0em;
     padding: 8px;
     overflow: hidden;
+    outline: none;
 
     transition: all 0.2s ease;
 }
 
-button:hover {
+button:hover, button:focus {
     background-color: var(--background-colour);
     border: solid 4px var(--accent-colour);
     padding: 6px;
@@ -35,17 +39,26 @@ input {
     border: solid 2px var(--accent-colour);
     font-size: 1.0em;
     padding: 8px;
+    outline: none;
 
     transition: all 0.2s ease;
 }
 
-input:selection {
+input:focus {
     background-color: var(--background-colour);
+}
+
+select {
+    background-color: transparent;
+    padding: 8px;
+    font-size: 1.0em;
+    transition: all 0.2s ease;
 }
 
 /* width */
 ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
   }
   
   /* Track */
@@ -64,7 +77,25 @@ input:selection {
     background: var(--accent-colour); 
   }
 
+/*main-menu.html and start-config.html stuff*/
+#menu-div {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--background-colour);
+    backdrop-filter: blur(16px);
+    width: 70%;
+    padding: 16px;
+    border: solid 8px var(--accent-colour);
+}
+
 /*game-client.html stuff*/
+#err-div {
+    position: absolute;
+    overflow: hidden;
+    z-index: 100;
+}
+
 #main-div {
     margin: 0px;
 }
@@ -77,14 +108,24 @@ input:selection {
 }
 
 /*game-gui.js elements*/
-#main-gui-div {
+#main-gui-background-div {
     position: absolute;
     background-color: var(--background-colour);
-    backdrop-filter: blur(4px);
-    width: 25%;
+    width: 30%;
     height: 100%;
-    z-index: 20;
+    resize: horizontal !important;
+    z-index: 19;
+    overflow: hidden;
+}
 
+#main-gui-div {
+    position: absolute;
+    background-color: transparent;
+    backdrop-filter: blur(4px);
+    width: calc(100% - 10px);
+    height: 100%;
+    left: 0px;
+    z-index: 20;
     overflow: hidden;
 }
 

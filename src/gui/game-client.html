@@ -4,9 +4,52 @@
         <script id="google-maps-api-script"></script>
         <script>
             const consts = require("../consts.js");
+            const helpers = require("../helpers.js");
+            const path = require("path");
             let apiScript = document.getElementById("google-maps-api-script");
-            let key = require("../helpers.js").getGoogleMapsAPIKey();
+            let key = helpers.getGoogleMapsAPIKey();
             apiScript.src = consts.GOOGLE_MAPS_API_URL + key + consts.GOOGLE_MAPS_API_LIBS;
+
+            let errorTimeout = 5000; // if the map doesn't load within this time, tell them there's something wrong
+            setTimeout(() => {
+                if(typeof google == "object") {
+                    return;
+                }
+                let errDiv = document.createElement("div");
+                errDiv.id = "err-div";
+                document.body.prepend(errDiv);
+                let errP = document.createElement("p");
+                errP.innerText = [
+                    "An error occurred when loading Google Maps...",
+                    "Either your device isn't connected to the internet",
+                    "or Google Map's API isn't working for you.",
+                    "You could try using a new API key. Go to:",
+                    "https://developers.google.com/maps/documentation/javascript/get-api-key",
+                    "to get a new key, and then paste it in the text box below, then",
+                    "override the current key, and close this window and try reconnecting."
+                ].join("\n");
+                errDiv.appendChild(errP)
+                let errInput = document.createElement("input");
+                errDiv.appendChild(errInput);
+                errDiv.appendChild(helpers.createButton(
+                    "Override",
+                    (e) => {
+                        let keysPath = "../../data/keys.json";
+                        let keys = require(keysPath);
+                        let keyTitle = "googleMapsAPI";
+                        let oldKeyTitle = keyTitle + new Date().getTime();
+                        keys[oldKeyTitle] = key;
+                        keys[keyTitle] = helpers.sanitizeInput(errInput.value, 100); // idk how long a key is
+
+                        helpers.writeToFile(path.resolve(__dirname, keysPath), keys, (err) => {
+                            if(err) {
+                                console.log(err);
+                            }
+                        });
+                    }
+                ));
+
+            }, errorTimeout);
 
             window.onload = () => {
                 require("../game-client.js");
