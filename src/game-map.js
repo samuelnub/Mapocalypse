@@ -41,6 +41,7 @@ function GameMap(gameClient) {
 
 GameMap.prototype.createMarker = function(params) {
     // Create a marker and put it in this.marker pool
+    // returns the marker
     // Params object:
     //  position: {lat:num,lng:num} or google.maps.LatLng() position
     //  id: string (entity most likely)
@@ -49,20 +50,24 @@ GameMap.prototype.createMarker = function(params) {
     //  onClickCallback: function(event), with event containing click event info (+latLng!)
     //  animDuration: (optional) purely visual - how long the animation duration should be
 
-    let marker = new SlidingMarker({
-        position: params.position || new google.maps.LatLng(0,0),
-        icon: {
-            url: locale.files.iconsPath + (params.icon ? params.icon : locale.files.icons.unknown) + locale.files.iconFiletype
-        },
-        title: params.title || locale.general.nothing,
-        map: this.map
-    });
+    // having ourParams lets us copy any other custom marker parameters
+    let ourParams = params;
+    ourParams.position = params.position || new google.maps.LatLng(0,0);
+    ourParams.icon = {
+        url: "../../data/icons/" + (params.icon ? params.icon : locale.icons.unknown) + ".svg"
+    };
+    ourParams.title = params.title || locale.general.nothing;
+    ourParams.duration = params.duration || 1500;
+    ourParams.map = this.map;
+    let marker = new SlidingMarker(ourParams);
     marker.id = params.id || helpers.uuid();
     if(typeof params.onClickCallback == "function") {
-        marker.addListener("click", () => {
+        marker.addListener("click", (e) => {
             params.onClickCallback(e);
         });
     }
+    this.markers[marker.id] = marker;
+    return marker;
 }
 
 GameMap.prototype.removeMarker = function(identifier) {
@@ -76,4 +81,29 @@ GameMap.prototype.removeMarker = function(identifier) {
         this.markers[identifier.id].setMap(null);
         delete this.markers[identifier];
     }
+}
+
+GameMap.prototype.onClick = function(callback) {
+    // returns google eventListener for you to keep track of, if you want to remove it
+    // you probably won't use this externally, as you'll just listen to the printMapContextMenu event
+    // Params:
+    //   callback: function(event) where event = object (has .latLng properties)
+    
+    let eventListener;
+    const callCallback = function(e) {
+        if(typeof callback === "function") {
+            callback(e);
+        }
+    };
+    const callCallbackBound = callCallback.bind(this);
+    
+    eventListener = google.maps.event.addListener(this.map, "click", callCallbackBound);
+    return eventListener;
+}
+
+GameMap.prototype.removeOnClick = function(eventListener) {
+    // Params:
+    //  eventListener: google.maps.event EventListener
+
+    google.maps.event.removeListener(eventListener);
 }

@@ -110,6 +110,36 @@ function createChatPacket(idFrom, text, idTo) {
     };
 }
 
+exports.createWaypointInfo = createWaypointInfo;
+function createWaypointInfo(clickEvent, actions, entity) {
+    // A wrapped up factory for the details that they waypoint class emits
+    // when a selection's been made, usually for the GUI class to pick up and render
+    // Params:
+    //  clickEvent: the click event that was emitted that the waypoint class picked up
+    //  actions: an array of waypointActions that can be executed (or that the gui will render as buttons)
+    //  entity: the optional entity that was clicked (not given if the waypoint is on the map itself)
+    return {
+        clickEvent: clickEvent || null,
+        actions: (Array.isArray(actions) ? actions : []),
+        entity: entity || null
+    }
+}
+
+exports.createWaypointAction = createWaypointAction;
+function createWaypointAction(title, action) {
+    // An action used by entities/waypoint/gui to... do things
+    // Params:
+    //  title: string name of the action
+    //  action: function(entity), with entity being optional - the entity it's acting upon
+
+    return {
+        title: title,
+        action: (typeof action == "function" ? action : () => {
+            console.log("Undefined waypoint action");
+        })
+    };
+}
+
 exports.getFirstKey = getFirstKey;
 function getFirstKey(obj) {
     return Object.keys(obj)[0];

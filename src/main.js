@@ -44,7 +44,7 @@ function createWindow(windowVarName, htmlPage) {
     global[windowVarName].on("closed", () => {
         global[windowVarName] = null; 
     });
-
+    
     console.log("Created new window with var name " + windowVarName);
 };
 

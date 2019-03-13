@@ -51,7 +51,6 @@ Wallpapers.prototype.init = function(blur) {
             return;
         }
         this.data = JSON.parse(data);
-        console.log(this.data);
         document.body.appendChild(this.aImg);
         document.body.appendChild(this.bImg);
         

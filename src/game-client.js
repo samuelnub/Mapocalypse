@@ -6,6 +6,8 @@ const locale = require("../data/localisation.js").locale;
 
 const GameGUI = require("./game-gui.js");
 const GameMap = require("./game-map.js");
+const GameEntities = require("./game-entities.js");
+const GameWaypoint = require("./game-waypoint.js");
 
 (() => { // This IIFE doesn't need to be here, but it's just nice to segment the code
     const gameLoadInfo = remote.getGlobal(consts.GLOBAL_NAMES.GAME_LOAD_INFO);
@@ -33,9 +35,12 @@ function GameClient(gameLoadInfo) {
     this.data = null; // world data
     this.ourPlayerInfo = helpers.getActivePlayerInfo(); // just caching it here cuz it's not gonna modify anyway
     this.playerInfos = {} // key: socket.id, value: playerInfo
+    this.eventsElement = document.createElement("div"); // internal element for event listening/emitting
 
     this.gui = null;
     this.map = null;
+    this.entities = null;
+    this.waypoint = null;
 
     setTimeout(() => {
         this.stinkyConstructor(gameLoadInfo);
@@ -78,6 +83,8 @@ GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
 
     this.gui = new GameGUI.GameGUI(this);
     this.map = new GameMap.GameMap(this);
+    this.entities = new GameEntities.GameEntities(this);
+    this.waypoint = new GameWaypoint.GameWaypoint(this);
 }
 
 GameClient.prototype.getOurPlayerInfo = function () {
@@ -105,24 +112,54 @@ GameClient.prototype.ioEmit = function (type, data) {
     //  data: object you wanna send
 
     this.ioClient.emit(type, data);
+    console.log("IO event " + type + " was emitted!");
 }
 
-GameClient.prototype.ioOn = function (type, callback) {
+GameClient.prototype.ioOn = function (type, callback, once) {
     // Listen for the ioClient event that you've subscribed to
     // Params:
-    //  type: string, const.IO_EVENTS type
+    //  type: string, consts.IO_EVENTS type
     //  callback: function(data), with data being the data that the server's given you
-    this.ioClient.on(type, (data) => {
-        if (typeof callback == "function") {
+    //  once: (optional) bool, if true, will remove the listener once it's occurred
+    const callCallback = function(data) {
+        if(typeof callback == "function") {
             callback(data);
         }
-    });
+        if(once) {
+            this.ioClient.removeListener(type, callCallbackBound);
+        }
+    };
+    const callCallbackBound = callCallback.bind(this);
+    this.ioClient.on(type, callCallbackBound);
 }
 
-GameClient.prototype.ioRemoveOn = function (type, callback) {
-    // Unsubscribing from the callback (just to prevent memory pollution)
+GameClient.prototype.emit = function(type, data) {
+    // Emit an internal client-based event
     // Params:
-    //  type: string, const.IO_EVENTS type
-    //  callback: the specific callback function you used when subscribing
-    this.ioClient.removeListener(type, callback);
+    //  type: string, consts.CLIENT_EVENTS
+    //  data: object you want to send
+
+    const event = new CustomEvent(type, {
+        detail: { data: data || null}
+    });
+    this.eventsElement.dispatchEvent(event);
+    console.log("Client Event " + type + " was emitted!");
+}
+
+GameClient.prototype.on = function(type, callback, once) {
+    // Listen for our client-based events
+    // Params:
+    //  type: string, consts.CLIENT_EVENTS
+    //  callback: function(data)
+    //  once: (optional) bool, it will remove the listener after the event occurs
+    const callCallback = function(e) {
+        if(typeof callback == "function") {
+            callback(e.detail.data);
+        }
+        if(once) {
+            this.eventsElement.removeEventListener(type, callCallbackBound);
+        }
+    };
+    const callCallbackBound = callCallback.bind(this);
+    this.eventsElement.addEventListener(type, callCallbackBound);
 }

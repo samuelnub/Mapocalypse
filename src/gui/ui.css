@@ -113,6 +113,7 @@ select {
     background-color: var(--background-colour);
     width: 30%;
     height: 100%;
+    max-width: 100%;
     resize: horizontal !important;
     z-index: 19;
     overflow: hidden;
@@ -132,7 +133,7 @@ select {
 #chat-div {
     position: absolute;
     width: 100%;
-    height: calc(100%/3);
+    height: 33%;
     bottom: 0px;
 }
 
@@ -177,4 +178,22 @@ select {
     width: 30% !important;
     bottom: 0px;
     right: 0px;
+}
+
+#waypoint-info-div {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 33%;
+    top: 0px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 4px;
+    border-bottom: 2px solid var(--accent-white);
+}
+
+#waypoint-info-div > p {
+    font-weight: bold;
+    font-size: 1.2em;
+    word-wrap: break-word;
 }

@@ -49,6 +49,10 @@ function GameGUI(gameClient) {
     this.chatEnterBtn.id = "chat-enter-btn";
     this.chatDiv.appendChild(this.chatEnterBtn);
 
+    this.waypointInfoDiv = document.createElement("div");
+    this.waypointInfoDiv.id = "waypoint-info-div";
+    this.mainGUIDiv.appendChild(this.waypointInfoDiv);
+
     // Listening for our ioClient receiving a chat message event
     this.gameClient.ioOn(consts.IO_EVENTS.INCOMING_PUBLIC_CHAT_STC, (chatPacket) => {
         if(chatPacket.idFrom == this.gameClient.getOurSocketId()) {
@@ -74,10 +78,25 @@ function GameGUI(gameClient) {
     this.gameClient.ioOn(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
         this.logChat(
             locale.general.programName,
-            helpers.getFirstKeysValue(playerPacket).name + " has connected!",
+            helpers.getFirstKeysValue(playerPacket).name + " has disconnected!",
             true
         );
     });
+
+    // Client-events to listen for
+    this.gameClient.on(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, (waypointInfo) => {
+        this.waypointInfoDiv.innerHTML = "";
+        let titleP = document.createElement("p");
+        titleP.innerHTML = (typeof entity == "object" ? entity.type + " " + entity.uuid + " " + locale.general.at: locale.waypoint.selectionAt) + waypointInfo.clickEvent.latLng.lat().toFixed(4) + "," + waypointInfo.clickEvent.latLng.lng().toFixed(4);
+        this.waypointInfoDiv.appendChild(titleP);
+        let actions = waypointInfo.actions;
+        for(action of actions) {
+            this.waypointInfoDiv.appendChild(helpers.createButton(
+                action.title,
+                action.action
+            ))
+        }
+    })
 
     console.log("GameGUI initialised!");
 }

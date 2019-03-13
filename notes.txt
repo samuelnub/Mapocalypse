@@ -74,3 +74,28 @@
     the joining process works! sending playerPackets to and fro' (playerPacket is just a single-key object
     with the key being the socket.id, and the value being playerInfo)
     public chatting works!
+
+9/3/2019
+    Starting work on waypoint selection, bringing up a context menu on
+    what you can do with your selection and whatnot
+
+11/3/2019
+    Refactored localisation a bit, also removed the redundant bits
+    also, starting basic work on entities (the final piece of the puzzle)
+    Gonna use inheritance (Base.call(this)) for different entity types
+    When an entity/the map is clicked, the waypoint class will hopefully
+    emit an event with data containing info about the click event
+    (actions you can do) (look in helpers.js)
+
+12/3/2019
+    Working on spawning our player (and generally testing to see if entities work at all yet)
+    Every entity action that originates from our client must be verified
+    by the server
+
+13/3/2019
+    You can verify if a position is water or land - SERVER SIDE!
+    Many headaches were had, the original hack to verifying water/land depended
+    on canvas, which can't be obtained easily on nodejs, so I used
+    the getPixels library to get the pixel data
+    So verification calls to google maps depends on the server's API key
+    
