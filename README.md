@@ -6,9 +6,9 @@ To build and run this:
 - You need [Node.js](https://nodejs.org/en/) and npm as a prerequisite
 - Clone this repository
 - Open your favourite CLI in the repository folder (Git Bash is my choice)
-- Run '''npm install'''
+- Run `npm install`
 - Optionally (more like mandatory), provide your own Google Maps API key, which you can obtain from [their website](https://developers.google.com/maps/documentation/javascript/get-api-key) (and make sure you enable the Places API and digital signing)
-- Finally, run '''npm test'''
+- Finally, run `npm test`
 
 A few footnotes here:
 - I'm developing and testing this on Windows 10 x64, so I cannot guarantee that other operating systems will work.
