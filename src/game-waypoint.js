@@ -16,7 +16,8 @@ function GameWaypoint(gameClient) {
         id: helpers.uuid(),
         icon: locale.icons.waypoint,
         duration: 500,
-        clickable: false
+        clickable: false,
+        opacity: 0.5
     });
     this.ourMarker.setVisible(false);
 
@@ -34,11 +35,30 @@ function GameWaypoint(gameClient) {
                             lng: e.latLng.lng()
                         });
                         this.gameClient.ioOn(consts.IO_EVENTS.IS_POS_WATER_STC, (isWater) => {
-                            this.gameClient.gui.logChat("is it water?", (isWater? "yes!" : "no."));
+                            if(isWater) {
+                                this.gameClient.gui.logChat(locale.general.programName, locale.general.noThatsWater, true);
+                                return;
+                            }
+                            this.gameClient.entities.createEntity({
+                                type: locale.entities.player,
+                                uuid: this.gameClient.getOurPlayerInfo().uuid,
+                                position: e.latLng
+                            });
                         }, true);
                     })
                 ]
             ))
+        }
+        else {
+            // Our player exists, so let's let them do stuff
+            this.gameClient.emit(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, helpers.createWaypointInfo(
+                e,
+                [
+                    helpers.createWaypointAction(locale.waypoint.actions.general.movePlayer, () => {
+                        this.gameClient.entities.getOurPlayer().move(e.latLng, true);
+                    })
+                ]
+            ));
         }
     });
 

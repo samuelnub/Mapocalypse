@@ -98,4 +98,17 @@
     on canvas, which can't be obtained easily on nodejs, so I used
     the getPixels library to get the pixel data
     So verification calls to google maps depends on the server's API key
-    
+
+14/3/2019
+    Alright, here's the scoop for making a move:
+    (server)sends game data (entities n that) to each client when they connect
+    (client)makes request to move/spawn entity or whatnot
+    (server)verifies it, if not, don't broadcast to everyone, if yes, calculate the result and broadcast it to all clients
+    (server)updates its game data
+    {client}receives updated entity attributes and applies them
+    pretty much fully done now - just need to make sure
+    when you create an entity and send it to the server, the server
+    sends it back to everyone else
+
+15/3/2019
+    It's pretty much done, just need to finish up localisation for the menus and such

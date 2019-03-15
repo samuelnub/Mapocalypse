@@ -19,8 +19,8 @@ function WorldData(params) {
     this.name = (params.hasOwnProperty(worldDataFormat.name) ? params.name : helpers.uuid());
     this.id = (params.hasOwnProperty(worldDataFormat.id) ? params.id : helpers.uuid());
     this.seed = (params.hasOwnProperty(worldDataFormat.seed) ? params.seed : 5318008);
-    this.entities = (params.hasOwnProperty(worldDataFormat.entities) ? params.entities : []);
-    this.places = (params.hasOwnProperty(worldDataFormat.places) ? params.places : []);
+    this.entities = (params.hasOwnProperty(worldDataFormat.entities) ? params.entities : {});
+    this.places = (params.hasOwnProperty(worldDataFormat.places) ? params.places : {});
 }
 
 exports.WorldsManager = WorldsManager;

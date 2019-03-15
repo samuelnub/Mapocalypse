@@ -14,52 +14,86 @@ function GameEntities(gameClient) {
 
     this.entities = {}; // key: uuid, value: Entity object
 
+    this.setupIoTransfers();
+
     console.log("GameEntities initialised!");
 }
 
-GameEntities.prototype.createEntity = function (params) {
+GameEntities.prototype.setupIoTransfers = function() {
+    this.gameClient.ioEmit(consts.IO_EVENTS.REQUEST_ENTITY_INFOS_CTS);
+    this.gameClient.ioOn(consts.IO_EVENTS.HERES_ENTITY_INFOS_STC, (entityInfos) => {
+        for(let uuid of Object.keys(entityInfos)) {
+            this.createEntity(entityInfos[uuid], false);
+        }
+        console.log("Received the initial entities and set them up.");
+        console.log(this.entities);
+    });
+
+    // The result of entity action verifications
+
+    this.gameClient.ioOn(consts.IO_EVENTS.NEW_ENTITY_INFO_STC, (entityInfo) => {
+        if(this.entities.hasOwnProperty(entityInfo.uuid)) {
+            return; // We already have that entity UUID (assume we made it then)
+        }
+        this.createEntity(entityInfo, false);
+    });
+
+    this.gameClient.ioOn(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
+        try {
+            this.entities[helpers.getFirstKeysValue(playerPacket).uuid].setVisible(true);
+        }
+        catch {
+            // that player that just connected hasn't spawned in
+        }
+    });
+    this.gameClient.ioOn(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
+        try {
+            this.entities[helpers.getFirstKeysValue(playerPacket).uuid].setVisible(false);
+        }
+        catch {
+            // that player that just disconnected hasn't spawned in
+        }
+    });
+
+    this.gameClient.ioOn(consts.IO_EVENTS.ENTITY_MOVE_STC, (entityNewPos) => {
+        if(entityNewPos.err) {
+            this.gameClient.gui.logChat(locale.general.programName, entityNewPos.err, true);
+            return;
+        }
+        let ourNewPosition = new google.maps.LatLng(entityNewPos.position.lat, entityNewPos.position.lng)
+        this.entities[entityNewPos.uuid].move(ourNewPosition, false);
+    });
+}
+
+GameEntities.prototype.createEntity = function (params, sendToServer) {
     // Use this to create entities. Don't use new Entity().
     // Params:
     //  refer to Entity definition
+    //  sendToServer: optional boolean to say whether you want to export this newly created entity to the server to log (yes in most cases), default true
     let ourParams = {
+        gameClient: this.gameClient,
         type: params.type || locale.entities.unknown,
         uuid: params.uuid || helpers.uuid(),
         position: params.position || new google.maps.LatLng(0, 0),
         inventory: params.inventory || [],
-        marker: params.marker || null
+        health: params.health || 100,
+        stamina: params.stamina || 100,
+        experience: params.experience || 0
     };
-    let type = params.type;
     let entity = null;
-    let markerParams = { // we'll insert the icon type and title down in the switch-case
-        position: ourParams.position,
-        id: ourParams.uuid,
-        // icon: null,
-        // title: null,
-        // onClickCallback: null
-    };
-    switch (type) {
+    switch (ourParams.type) {
         case locale.entities.player:
-            entity = new Player({
-                ...params,
-                ...{
-                    marker: this.gameClient.map.createMarker({
-                        ...markerParams,
-                        ...{
-                            icon: locale.icons.player,
-                            title: locale.entities.player,
-                            onClickCallback: (e) => {
-                                console.log(this.type + " " + this.uuid); // testing the this context
-                            }
-                        }
-                    })
-                }
-            });
+            entity = new Player(ourParams);
             break;
         default:
             console.log("Uh, entity wasn't specified when creating an entity");
             return null;
     }
+
     this.entities[entity.uuid] = entity;
+    if(sendToServer == null || sendToServer === true) {
+        this.gameClient.ioEmit(consts.IO_EVENTS.NEW_ENTITY_INFO_CTS, entity.export());
+    }
     return entity;
 }
 
@@ -76,30 +110,12 @@ GameEntities.prototype.removeEntity = function (identifier) {
 
 GameEntities.prototype.getOurPlayer = function () {
     // Will return false if our player doesn't exist as an entity yet
-    let ourUuid = this.gameClient.getOurPlayerInfo();
+    let ourUuid = this.gameClient.getOurPlayerInfo().uuid;
     if (this.entities.hasOwnProperty(ourUuid)) {
         return this.entities[ourUuid];
     }
     else {
         return false;
-    }
-}
-
-// VVV all the things that entities can do will be validated here
-// VVV the callback is hence optional - if you don't give it, it's just a local move, but
-// VVV but if you specify the callback, it will be sent to the server and to everyone else
-
-GameEntities.prototype.move = function (entity, position, callback) {
-    // Params:
-    //  entity: Entity instance you want to move
-    //  position: LatLng you want to move to
-    //  callback: (optional), if specified, this will be verified by the server
-    if (typeof callback == "function") {
-        this.gameClient.ioEmit(consts.IO_EVENTS.IS_POS_WATER_CTS, {
-            lat: position.lat(),
-            lng: position.lng()
-        });
-
     }
 }
 
@@ -110,17 +126,31 @@ exports.Entity = Entity;
 function Entity(params) {
     // external classes likely won't be constructing this, hence no validation happens here
     // Params:
+    //  gameClient: GameClient instance that's tagged in here
     //  type: string in locale specifying the child class type when constructed
     //  uuid: (optional) the uuid you want to set, for players, it'll be their playerInfo uuid
     //  position: LatLng spawnpoint
     //  inventory: array of items (TBD)
-    //  marker: google.maps.Marker instance (slidingMarker) given from the factory manager
+    //  health: number 0 to 100
+    //  stamina: number 0 to 100
+    //  experience: 0 to whatever
+    this.gameClient = gameClient;
 
     this.type = params.type;
     this.uuid = params.uuid;
     this.position = params.position;
     this.inventory = params.inventory;
-    this.marker = params.marker;
+    
+    this.health = params.health;
+    this.stamina = params.stamina;
+    this.experience = params.experience;
+
+    this.marker = null;
+    this.genericMarkerParams = {
+        position: this.position,
+        id: this.uuid,
+        title: this.type + " " + this.uuid
+    };
 }
 
 Entity.prototype.export = function () {
@@ -128,9 +158,32 @@ Entity.prototype.export = function () {
     return {
         type: this.type,
         uuid: this.uuid,
-        position: { lat: this.position.Lat(), lng: this.position.Lng() },
-        inventory: this.inventory
+        position: this.position.toJSON(),
+        inventory: this.inventory,
+        health: this.health,
+        stamina: this.stamina,
+        experience: this.experience
     }
+}
+
+Entity.prototype.move = function(position, sendToServer) {
+    // Params:
+    //  position: google.maps.LatLng position you want to move to
+    //  sendToServer: (optional) bool whether you want it to be a local or server-wide move, default true
+    if(sendToServer == null || sendToServer === true) {
+        this.gameClient.ioEmit(consts.IO_EVENTS.ENTITY_MOVE_CTS, {
+            uuid: this.uuid,
+            position: position.toJSON()
+        });
+        // Now we wait for the server's response
+        return;
+    }
+    this.marker.setPosition(position);
+    this.position = position;
+}
+
+Entity.prototype.setVisible = function(bool) {
+    this.marker.setVisible(bool);
 }
 
 exports.Player = Player;
@@ -139,6 +192,19 @@ function Player(params) {
     // Params:
     //  refer to base Entity
     Entity.call(this, params);
+    
+    this.marker = this.gameClient.map.createMarker({
+        ...this.genericMarkerParams,
+        ...{
+            icon: locale.icons.player,
+            onClickCallback: (e) => {
+                this.gameClient.gui.logChat(this.gameClient.getPlayerInfoFromUUID(this.uuid).name + " says", "Hello!", true);
+            }
+        }
+    });
+    this.isThisPlayerConnected = (this.gameClient.getPlayerInfoFromUUID(this.uuid) ? true : false);
+    this.setVisible(this.isThisPlayerConnected);
 }
+Player.prototype = Object.create(Entity.prototype); // Remember this and .call(this)!
 
 // #endregion

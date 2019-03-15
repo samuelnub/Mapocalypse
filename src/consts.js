@@ -27,8 +27,14 @@ exports.IO_EVENTS = {
     NEW_DISCONNECTED_PLAYER_INFO_STC: "NEW_DISCONNECTED_PLAYER_INFO_STC",
     SEND_PUBLIC_CHAT_CTS: "SEND_PUBLIC_CHAT_CTS",
     INCOMING_PUBLIC_CHAT_STC: "INCOMING_CHAT_STC",
-    IS_POS_WATER_CTS: "IS_POS_WATER_CTS",   // data given: position: LatLng
-    IS_POS_WATER_STC: "IS_POS_WATER_STC"    // data given: true/false
+    REQUEST_ENTITY_INFOS_CTS: "REQUEST_ENTITY_INFOS_CTS",
+    HERES_ENTITY_INFOS_STC: "HERES_ENTITY_INFOS_STC",
+    NEW_ENTITY_INFO_CTS: "NEW_ENTITY_INFO_CTS",
+    NEW_ENTITY_INFO_STC: "NEW_ENTITY_INFO_STC",
+    IS_POS_WATER_CTS: "IS_POS_WATER_CTS",   // data given: position: { lat:num, lng:num }
+    IS_POS_WATER_STC: "IS_POS_WATER_STC",   // data given: true/false
+    ENTITY_MOVE_CTS: "ENTITY_MOVE_CTS",     // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }, err: string/null }
+    ENTITY_MOVE_STC: "ENTITY_MOVE_STC"      // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }}
 };
 
 exports.CLIENT_EVENTS = {

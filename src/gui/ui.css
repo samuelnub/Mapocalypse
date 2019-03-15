@@ -147,7 +147,8 @@ select {
 
 .chat-msg-div {
     position: relative;
-    width: 100%;
+    left: 0px;
+    right: 0px;
     font-size: 0.8em;
     padding: 4px;
 }
@@ -162,6 +163,10 @@ select {
 
 .chat-msg-div > p:nth-child(odd) { /*Quick hacky way to get the top line, the sender*/
     font-weight: bold;
+}
+
+.chat-msg-div > p:nth-child(even) {
+    word-wrap: break-word;
 }
 
 #chat-input {

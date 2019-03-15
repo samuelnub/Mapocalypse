@@ -34,7 +34,7 @@ function GameClient(gameLoadInfo) {
     this.mainDiv = document.getElementById("main-div");
     this.data = null; // world data
     this.ourPlayerInfo = helpers.getActivePlayerInfo(); // just caching it here cuz it's not gonna modify anyway
-    this.playerInfos = {} // key: socket.id, value: playerInfo
+    this.playerInfos = null; // key: socket.id, value: playerInfo
     this.eventsElement = document.createElement("div"); // internal element for event listening/emitting
 
     this.gui = null;
@@ -50,6 +50,15 @@ function GameClient(gameLoadInfo) {
 GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
     // because this particular class is a big DUMB and can't have prototype functions called in the constructor
     // Setting up ioClient and its initial data transfers with the server
+    let setupManagersIfIoTransfersAreDone = () => {
+        if(this.ioClient !== null && this.data !== null && this.playerInfos !== null) {
+            this.gui = new GameGUI.GameGUI(this);
+            this.map = new GameMap.GameMap(this);
+            this.entities = new GameEntities.GameEntities(this);
+            this.waypoint = new GameWaypoint.GameWaypoint(this);
+        }
+    };
+
     this.ioClient = io.connect(consts.HTTP_PREFIX + gameLoadInfo.address);
 
     this.ioClient.emit(consts.IO_EVENTS.HERES_MY_PLAYER_INFO_CTS, helpers.getActivePlayerInfo());
@@ -58,10 +67,15 @@ GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
         console.log(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).players);
         this.data = data;
         console.log("Upon loading, this game data was received: " + JSON.stringify(this.data));
+
+        setupManagersIfIoTransfersAreDone();
     });
 
     this.ioClient.on(consts.IO_EVENTS.HERES_CONNECTED_PLAYER_INFOS_STC, (playerInfos) => {
+        console.log(playerInfos);
         this.playerInfos = playerInfos;
+
+        setupManagersIfIoTransfersAreDone();
     });
 
     this.ioClient.on(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
@@ -81,10 +95,6 @@ GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
     });
 
 
-    this.gui = new GameGUI.GameGUI(this);
-    this.map = new GameMap.GameMap(this);
-    this.entities = new GameEntities.GameEntities(this);
-    this.waypoint = new GameWaypoint.GameWaypoint(this);
 }
 
 GameClient.prototype.getOurPlayerInfo = function () {
@@ -102,6 +112,22 @@ GameClient.prototype.getPlayerInfoFromSocketId = function (id) {
     catch {
         console.log("That id " + id + " doesn't exist as far as I know...");
         return null;
+    }
+}
+
+GameClient.prototype.getPlayerInfoFromUUID = function(uuid) {
+    try {
+        let result = null;
+        for(let key of Object.keys(this.playerInfos)) {
+            if(this.playerInfos[key].uuid == uuid) {
+                result = this.playerInfos[key];
+                break;
+            }
+        }
+        return result;
+    } catch {
+        console.log("Somehow something went wrong with trying to get player info from uuid " + uuid);
+        return;
     }
 }
 

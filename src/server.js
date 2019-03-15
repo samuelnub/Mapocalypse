@@ -55,7 +55,7 @@ Server.prototype.setupIoTransfers = function () {
             this.io.emit(consts.IO_EVENTS.INCOMING_PUBLIC_CHAT_STC, chatPacket);
         });
 
-        this.game.setupIoSpecificListeners(socket);
+        this.game.setupIoSpecificTransfers(socket);
     });
 }
 
@@ -92,9 +92,7 @@ Server.prototype.ioOnSpecific = function (type, socket, callback, once) {
 }
 
 Server.prototype.ioEmitAll = function (type, data) {
-    for (let socket of this.sockets) {
-        this.ioEmitSpecific(type, socket, data);
-    }
+    this.io.emit(type, data);
 }
 
 Server.prototype.getAllWorldNames = function () {

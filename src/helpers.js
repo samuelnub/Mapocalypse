@@ -235,13 +235,13 @@ function createButton(text, callback) {
 }
 
 exports.distBetweenLatLngKm = distBetweenLatLngKm;
-function distBetweenLatLngKm(latLng1, latLng2) {
+function distBetweenLatLngKm(pos1, pos2) {
     // From https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 
-    let lat1 = latLng1.lat();
-    let lon1 = latLng1.lng();
-    let lat2 = latLng2.lat();
-    let lon2 = latLng2.lng();
+    let lat1 = pos1.lat;
+    let lon1 = pos1.lng;
+    let lat2 = pos2.lat;
+    let lon2 = pos2.lng;
 
     var R = 6371; // Radius of the earth in km
     var dLat = deg2rad(lat2 - lat1);  // deg2rad below

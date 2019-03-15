@@ -29,7 +29,8 @@ const locale = {
         selectionAt: "Selection @",
         actions: {
             general: {
-                spawnOurPlayer: "Spawn our player"
+                spawnOurPlayer: "Spawn our player",
+                movePlayer: "Move here"
             }
         }
     },

@@ -44,7 +44,7 @@ GameMap.prototype.createMarker = function(params) {
     // returns the marker
     // Params object:
     //  position: {lat:num,lng:num} or google.maps.LatLng() position
-    //  id: string (entity most likely)
+    //  id: string (entity uuid most likely)
     //  icon: string (just the icon name from ./data/icons/)
     //  title: string tooltip, entity/playername
     //  onClickCallback: function(event), with event containing click event info (+latLng!)
