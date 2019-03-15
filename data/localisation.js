@@ -3,27 +3,12 @@ const locale = {
     Strings for every string that appears in the game/webpage (except the warning lmao)
     structure:
     locales: object
-        language: object
-            class (camelCase): object
-                stringName: string (if it's a Documentation, prefix it with doc
-                and suffix with Cmd/Args (array of strings)/Desc)
-                ...
+        class (camelCase): object
+            stringName: string (if it's a Documentation, prefix it with doc
+            and suffix with Cmd/Args (array of strings)/Desc)
             ...
         ...
     */
-    entities: {
-        player: "Player",
-        enemy: "Enemy",
-        unknown: "Unknown"
-    },
-    icons: { // svg files
-        player: "player",
-        enemy: "enemy",
-        unknown: "unknown",
-        waypoint: "waypoint",
-        goal: "goal",
-        trophy: "trophy"
-    },
     waypoint: {
         placeholder: "Click anywhere on the map to begin!",
         selectionAt: "Selection @",
@@ -47,11 +32,46 @@ const locale = {
         selection: "Selection",
         at: "@",
         noThatsWater: "Nope, that's water!",
-        noThatsTooFar: "Nope, that's too far!"
+        noThatsTooFar: "Nope, that's too far!",
+        get googleMapsAPIKeyInvalidP() {
+            return [
+                "An error occurred when loading Google Maps...",
+                "Either your device isn't connected to the internet",
+                "or Google Map's API isn't working for you.",
+                "You could try using a new API key. Go to:",
+                "https://developers.google.com/maps/documentation/javascript/get-api-key",
+                "to get a new key, and then paste it in the text box below, then",
+                "override the current key, and close this window and try reconnecting."
+            ].join("\n");
+        }
+    },
+    mainMenu: {
+        get titleH1() {
+            return locale.general.programName;
+        },
+        playernameP: "Player name:",
+        startBtn: "Start",
+        quitBtn: "Quit"
     },
     styling: {
         brTag: "<br>",
         specialClass: "special",
+    },
+    startConfig: {
+        configureH1: "Configure game",
+        loadH2: "Load",
+        loadPortP: "Desired port:",
+        loadDeleteBtn: "Delete",
+        loadLoadBtn: "Load",
+        newH2: "New",
+        newWorldnameP: "World name:",
+        newPortP: "Desired port:",
+        newDisclaimerP: "If a world with the same name exists already, the existing world will be loaded instead.",
+        newBtn: "Start",
+        connectH2: "Connect",
+        connectAddressP: "Address:",
+        connectPortP: "Port:",
+        connectBtn: "Connect"
     }
 };
 exports.locale = locale;

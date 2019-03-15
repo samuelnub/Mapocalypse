@@ -7,6 +7,22 @@
     const Wallpapers = require("./wallpapers.js");
     let wallpapers = new Wallpapers.Wallpapers(0);
 
+    const locale = require("../data/localisation.js").locale;
+    document.getElementById("configure-h1").innerText = locale.startConfig.configureH1;
+    document.getElementById("load-h2").innerText = locale.startConfig.loadH2;
+    document.getElementById("load-port-p").innerText = locale.startConfig.loadPortP;
+    document.getElementById("load-delete-btn").innerText = locale.startConfig.loadDeleteBtn;
+    document.getElementById("load-load-btn").innerText = locale.startConfig.loadLoadBtn;
+    document.getElementById("new-h2").innerText = locale.startConfig.newH2;
+    document.getElementById("new-worldname-p").innerText = locale.startConfig.newWorldnameP;
+    document.getElementById("new-port-p").innerText = locale.startConfig.newPortP;
+    document.getElementById("new-disclaimer-p").innerText = locale.startConfig.newDisclaimerP;
+    document.getElementById("new-btn").innerText = locale.startConfig.newBtn;
+    document.getElementById("connect-h2").innerText = locale.startConfig.connectH2;
+    document.getElementById("connect-address-p").innerText = locale.startConfig.connectAddressP;
+    document.getElementById("connect-port-p").innerText = locale.startConfig.connectPortP;
+    document.getElementById("connect-btn").innerText = locale.startConfig.connectBtn;
+
     // "Load" code
     let loadWorldsSelect = document.getElementById("load-worlds-select");
     function updateLoadWorldsSelect() {

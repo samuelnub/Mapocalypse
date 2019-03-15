@@ -43,7 +43,7 @@ function GameGUI(gameClient) {
             ourSendChat();
         }
     },false);
-    this.chatEnterBtn = helpers.createButton("Enter", (e) => {
+    this.chatEnterBtn = helpers.createButton(locale.general.enter, (e) => {
         ourSendChat();
     });
     this.chatEnterBtn.id = "chat-enter-btn";

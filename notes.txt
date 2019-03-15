@@ -111,4 +111,4 @@
     sends it back to everyone else
 
 15/3/2019
-    It's pretty much done, just need to finish up localisation for the menus and such
+    It's pretty much done

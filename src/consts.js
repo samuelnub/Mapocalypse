@@ -42,6 +42,21 @@ exports.CLIENT_EVENTS = {
     WAYPOINT_SELECTION_INFO: "WAYPOINT_SELECTION_INFO"
 };
 
+exports.ENTITY_TYPES = {
+    PLAYER: "PLAYER",
+    ENEMY: "ENEMY",
+    UNKNOWN: "UNKNOWN"
+};
+
+exports.ICON_NAMES = {
+    PLAYER: "player",
+    ENEMY: "enemy",
+    UNKNOWN: "unknown",
+    WAYPOINT: "waypoint",
+    GOAL: "goal",
+    TROPHY: "trophy"
+};
+
 exports.GLOBAL_NAMES = {
     ACTIVE_PLAYER_INFO: "MAPOCALYPSE_ACTIVE_PLAYER_INFO",
     SERVER: "MAPOCALYPSE_SERVER",

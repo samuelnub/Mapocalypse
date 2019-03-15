@@ -1,4 +1,5 @@
 const helpers = require("./helpers.js");
+const consts = require("./consts.js");
 const locale = require("../data/localisation.js").locale;
 const SlidingMarker = require("marker-animate-unobtrusive");
 
@@ -20,8 +21,8 @@ function GameMap(gameClient) {
         require("../data/map-styles.js").mapStyleNight, { name: "Mapocalypse Style Night" });
 
         this.map = new google.maps.Map(this.mapDiv, {
-        center: new google.maps.LatLng(53.551458, -1.923063),
-        zoom: 8,
+        center: new google.maps.LatLng(0/*53.551458*/, 0/*-1.923063*/),
+        zoom: 2,
         minZoom: 2,
         disableDefaultUI: true,
         mapTypeControlOptions: {
@@ -54,7 +55,7 @@ GameMap.prototype.createMarker = function(params) {
     let ourParams = params;
     ourParams.position = params.position || new google.maps.LatLng(0,0);
     ourParams.icon = {
-        url: "../../data/icons/" + (params.icon ? params.icon : locale.icons.unknown) + ".svg"
+        url: "../../data/icons/" + (params.icon ? params.icon : consts.ICON_NAMES.UNKNOWN) + ".svg"
     };
     ourParams.title = params.title || locale.general.nothing;
     ourParams.duration = params.duration || 1500;

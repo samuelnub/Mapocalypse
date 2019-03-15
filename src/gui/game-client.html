@@ -6,6 +6,7 @@
             const consts = require("../consts.js");
             const helpers = require("../helpers.js");
             const path = require("path");
+            const locale = require("../../data/localisation.js").locale;
             let apiScript = document.getElementById("google-maps-api-script");
             let key = helpers.getGoogleMapsAPIKey();
             apiScript.src = consts.GOOGLE_MAPS_API_URL + key + consts.GOOGLE_MAPS_API_LIBS;
@@ -19,20 +20,12 @@
                 errDiv.id = "err-div";
                 document.body.prepend(errDiv);
                 let errP = document.createElement("p");
-                errP.innerText = [
-                    "An error occurred when loading Google Maps...",
-                    "Either your device isn't connected to the internet",
-                    "or Google Map's API isn't working for you.",
-                    "You could try using a new API key. Go to:",
-                    "https://developers.google.com/maps/documentation/javascript/get-api-key",
-                    "to get a new key, and then paste it in the text box below, then",
-                    "override the current key, and close this window and try reconnecting."
-                ].join("\n");
+                errP.innerText = locale.general.googleMapsAPIKeyInvalid;
                 errDiv.appendChild(errP)
                 let errInput = document.createElement("input");
                 errDiv.appendChild(errInput);
                 errDiv.appendChild(helpers.createButton(
-                    "Override",
+                    locale.general.enter,
                     (e) => {
                         let keysPath = "../../data/keys.json";
                         let keys = require(keysPath);

@@ -72,7 +72,7 @@ GameEntities.prototype.createEntity = function (params, sendToServer) {
     //  sendToServer: optional boolean to say whether you want to export this newly created entity to the server to log (yes in most cases), default true
     let ourParams = {
         gameClient: this.gameClient,
-        type: params.type || locale.entities.unknown,
+        type: params.type || consts.ENTITY_TYPES.UNKNOWN,
         uuid: params.uuid || helpers.uuid(),
         position: params.position || new google.maps.LatLng(0, 0),
         inventory: params.inventory || [],
@@ -82,7 +82,7 @@ GameEntities.prototype.createEntity = function (params, sendToServer) {
     };
     let entity = null;
     switch (ourParams.type) {
-        case locale.entities.player:
+        case consts.ENTITY_TYPES.PLAYER:
             entity = new Player(ourParams);
             break;
         default:
@@ -196,7 +196,7 @@ function Player(params) {
     this.marker = this.gameClient.map.createMarker({
         ...this.genericMarkerParams,
         ...{
-            icon: locale.icons.player,
+            icon: consts.ICON_NAMES.PLAYER,
             onClickCallback: (e) => {
                 this.gameClient.gui.logChat(this.gameClient.getPlayerInfoFromUUID(this.uuid).name + " says", "Hello!", true);
             }

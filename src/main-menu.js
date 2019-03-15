@@ -7,6 +7,12 @@
     const Wallpapers = require("./wallpapers.js");
     let wallpapers = new Wallpapers.Wallpapers(0);
 
+    const locale = require("../data/localisation.js").locale;
+    document.getElementById("title-h1").innerText = locale.mainMenu.titleH1;
+    document.getElementById("playername-p").innerText = locale.mainMenu.playernameP;
+    document.getElementById("start-btn").innerText = locale.mainMenu.startBtn;
+    document.getElementById("quit-btn").innerText = locale.mainMenu.quitBtn;
+
     const maxPlayerNameLength = 32;
     const playersFilepath = "../data/players.json";
 

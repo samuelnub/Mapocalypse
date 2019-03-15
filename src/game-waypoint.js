@@ -14,7 +14,7 @@ function GameWaypoint(gameClient) {
     this.ourMarker = this.gameClient.map.createMarker({
         position: new google.maps.LatLng(0, 0),
         id: helpers.uuid(),
-        icon: locale.icons.waypoint,
+        icon: consts.ICON_NAMES.WAYPOINT,
         duration: 500,
         clickable: false,
         opacity: 0.5
@@ -40,7 +40,7 @@ function GameWaypoint(gameClient) {
                                 return;
                             }
                             this.gameClient.entities.createEntity({
-                                type: locale.entities.player,
+                                type: consts.ENTITY_TYPES.PLAYER,
                                 uuid: this.gameClient.getOurPlayerInfo().uuid,
                                 position: e.latLng
                             });
