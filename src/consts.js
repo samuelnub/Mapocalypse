@@ -6,6 +6,7 @@ exports.MAIN_MENU_HEIGHT = 600;
 exports.LOCALHOST_ADDRESS = "localhost";
 exports.HTTP_PREFIX = "http://";
 exports.DEFAULT_PORT = 4690;
+exports.DEFAULT_SEED = 8008135;
 exports.GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key=";
 exports.GOOGLE_MAPS_API_LIBS = "&libraries=places"; // Extra libraries tagged onto the url+key
 
@@ -39,6 +40,7 @@ exports.IO_EVENTS = {
 
 exports.CLIENT_EVENTS = {
     // Prefix with emitter's class name
+    ENTITY_CREATED: "ENTITY_CREATED", // passes entity uuid
     WAYPOINT_SELECTION_INFO: "WAYPOINT_SELECTION_INFO"
 };
 

@@ -94,6 +94,7 @@ GameEntities.prototype.createEntity = function (params, sendToServer) {
     if(sendToServer == null || sendToServer === true) {
         this.gameClient.ioEmit(consts.IO_EVENTS.NEW_ENTITY_INFO_CTS, entity.export());
     }
+    this.gameClient.emit(consts.CLIENT_EVENTS.ENTITY_CREATED, entity.uuid);
     return entity;
 }
 
@@ -101,11 +102,17 @@ GameEntities.prototype.removeEntity = function (identifier) {
     // Params:
     //  identifier: either string or entity object
     if (typeof identifier == "string") {
+        this.gameClient.map.removeMarker(this.entities[identifier].marker);
         delete this.entities[identifier];
     }
     else if (typeof identifier != "string" && identifier != null) {
-        delete this.entities[identifier];
+        this.gameClient.map.removeMarker(this.entities[identifier.uuid].marker);
+        delete this.entities[identifier.uuid];
     }
+}
+
+GameEntities.prototype.getEntityByUUID = function(uuid) {
+    return this.entities[uuid] || null;
 }
 
 GameEntities.prototype.getOurPlayer = function () {
@@ -144,6 +151,9 @@ function Entity(params) {
     this.health = params.health;
     this.stamina = params.stamina;
     this.experience = params.experience;
+
+    // Derivatives will populate these potential waypoint actions
+    this.actions = [];
 
     this.marker = null;
     this.genericMarkerParams = {

@@ -112,3 +112,5 @@
 
 15/3/2019
     It's pretty much done
+    Added a few extras like easily specifying your own gmaps api key in start-config,
+    also changed the structure of keys.json

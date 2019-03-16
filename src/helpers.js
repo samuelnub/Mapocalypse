@@ -66,7 +66,7 @@ function getActivePlayerInfo() {
 exports.getGoogleMapsAPIKey = getGoogleMapsAPIKey;
 function getGoogleMapsAPIKey() {
     try {
-        return require("../data/keys.json").googleMapsAPI;
+        return require("../data/keys.json").googleMapsAPI[0];
     }
     catch {
         console.log("Unable to get the Google Maps API key");
@@ -74,25 +74,62 @@ function getGoogleMapsAPIKey() {
     }
 }
 
+exports.getGoogleMapsAPIKeysArchived = getGoogleMapsAPIKeysArchived;
+function getGoogleMapsAPIKeysArchived() {
+    // gets the array of older keys ([0] is the current key)
+    try {
+        return require("../data/keys.json").googleMapsAPI;
+    }
+    catch {
+        console.log("Unable to get the Google Maps API keys archive");
+        return null;
+    }
+}
+
+exports.writeNewGoogleMapsAPIKey =writeNewGoogleMapsAPIKey;
+function writeNewGoogleMapsAPIKey(newKey) {
+    // Will save the old ones to a limit just in case
+    if(newKey === getGoogleMapsAPIKey()) {
+        return; // don't make redundant copies
+    }
+    let keysPath = "../data/keys.json";
+    let keys = require(keysPath);
+    let keyTitle = "googleMapsAPI";
+    keys[keyTitle].unshift(newKey);
+    if(keys[keyTitle].length > 10) {
+        delete keys[keyTitle][keys[keyTitle].length-1];
+    }
+
+    const path = require("path");
+    writeToFile(path.resolve(__dirname, keysPath), keys, (err) => {
+        if(err) {
+            console.log(err);
+        }
+    });
+}
+
 exports.createGameLoadInfo = createGameLoadInfo;
-function createGameLoadInfo(address, worldName) {
+function createGameLoadInfo(address, worldName, seed) {
     // This class helps store game initialisation info in the global setting so that
     // the game window can read it from the start-config screen
     // Do not change variables - only get() them
     // params:
-    //      address: string (The address you want to connect to)
-    //      worldName: string (leave to an empty string if its either a new world or external)
+    //  address: string (The address you want to connect to)
+    //  worldName: string (leave to an empty string if its either a new world or external)
+    //  seed: optional number to provide
 
     let tempAddress = address; // includes the port
     let tempPort = address.split(":")[address.split(":").length-1];
     let tempIsLocal = address.indexOf(consts.LOCALHOST_ADDRESS) !== -1;
     let tempWorldName = (tempIsLocal ? worldName : "");
+    let tempSeed = (typeof seed == "number" ? seed : consts.DEFAULT_SEED);
 
     return {
         address: tempAddress,
         port: tempPort,
         isLocal: tempIsLocal,
-        worldName: tempWorldName
+        worldName: tempWorldName,
+        seed: tempSeed
     };
 }
 

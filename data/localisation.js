@@ -60,18 +60,21 @@ const locale = {
     startConfig: {
         configureH1: "Configure game",
         loadH2: "Load",
-        loadPortP: "Desired port:",
         loadDeleteBtn: "Delete",
         loadLoadBtn: "Load",
         newH2: "New",
         newWorldnameP: "World name:",
-        newPortP: "Desired port:",
+        newSeedP: "Seed:",
         newDisclaimerP: "If a world with the same name exists already, the existing world will be loaded instead.",
         newBtn: "Start",
         connectH2: "Connect",
         connectAddressP: "Address:",
         connectPortP: "Port:",
-        connectBtn: "Connect"
+        connectBtn: "Connect",
+        settingsH2: "Settings",
+        settingsPortHostP: "Port when hosting:",
+        settingsGoogleMapsAPIKeyP: "Google Maps API Key:",
+        settingsGoogleMapsAPIKeyBtn: "Save"
     }
 };
 exports.locale = locale;

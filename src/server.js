@@ -3,6 +3,7 @@ const server = require("http").Server(app);
 const consts = require("./consts.js");
 const Game = require("./game.js");
 const worldData = require("./world-data.js");
+const remote = require("electron").remote;
 
 // Here, the server object acts as a god object for the game logic
 // There may be a lot of second-hand abstracted functions
@@ -111,8 +112,10 @@ Server.prototype.setCurrentWorld = function (worldName) {
     }
     catch (err) {
         // World doesn't exist on file, so let's create one
+        const curGameLoadInfo = global[consts.GLOBAL_NAMES.GAME_LOAD_INFO];
         world = this.worldsManager.create(new worldData.WorldData({
-            name: worldName
+            name: curGameLoadInfo.worldName,
+            seed: curGameLoadInfo.seed
         }));
     }
     this.game.setGameData(world);

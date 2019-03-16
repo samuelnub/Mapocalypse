@@ -5,44 +5,9 @@
         <script>
             const consts = require("../consts.js");
             const helpers = require("../helpers.js");
-            const path = require("path");
-            const locale = require("../../data/localisation.js").locale;
             let apiScript = document.getElementById("google-maps-api-script");
             let key = helpers.getGoogleMapsAPIKey();
             apiScript.src = consts.GOOGLE_MAPS_API_URL + key + consts.GOOGLE_MAPS_API_LIBS;
-
-            let errorTimeout = 5000; // if the map doesn't load within this time, tell them there's something wrong
-            setTimeout(() => {
-                if(typeof google == "object") {
-                    return;
-                }
-                let errDiv = document.createElement("div");
-                errDiv.id = "err-div";
-                document.body.prepend(errDiv);
-                let errP = document.createElement("p");
-                errP.innerText = locale.general.googleMapsAPIKeyInvalid;
-                errDiv.appendChild(errP)
-                let errInput = document.createElement("input");
-                errDiv.appendChild(errInput);
-                errDiv.appendChild(helpers.createButton(
-                    locale.general.enter,
-                    (e) => {
-                        let keysPath = "../../data/keys.json";
-                        let keys = require(keysPath);
-                        let keyTitle = "googleMapsAPI";
-                        let oldKeyTitle = keyTitle + new Date().getTime();
-                        keys[oldKeyTitle] = key;
-                        keys[keyTitle] = helpers.sanitizeInput(errInput.value, 100); // idk how long a key is
-
-                        helpers.writeToFile(path.resolve(__dirname, keysPath), keys, (err) => {
-                            if(err) {
-                                console.log(err);
-                            }
-                        });
-                    }
-                ));
-
-            }, errorTimeout);
 
             window.onload = () => {
                 require("../game-client.js");

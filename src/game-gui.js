@@ -87,7 +87,7 @@ function GameGUI(gameClient) {
     this.gameClient.on(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, (waypointInfo) => {
         this.waypointInfoDiv.innerHTML = "";
         let titleP = document.createElement("p");
-        titleP.innerHTML = (typeof entity == "object" ? entity.type + " " + entity.uuid + " " + locale.general.at: locale.waypoint.selectionAt) + waypointInfo.clickEvent.latLng.lat().toFixed(4) + "," + waypointInfo.clickEvent.latLng.lng().toFixed(4);
+        titleP.innerHTML = (typeof waypointInfo.entity == "object" ? waypointInfo.entity.type + " " + waypointInfo.entity.uuid + " " + locale.general.at: locale.waypoint.selectionAt) + waypointInfo.clickEvent.latLng.lat().toFixed(4) + "," + waypointInfo.clickEvent.latLng.lng().toFixed(4);
         this.waypointInfoDiv.appendChild(titleP);
         let actions = waypointInfo.actions;
         for(action of actions) {

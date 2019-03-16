@@ -62,6 +62,17 @@ function GameWaypoint(gameClient) {
         }
     });
 
+    this.gameClient.on(consts.CLIENT_EVENTS.ENTITY_CREATED, (uuid) => {
+        let entity = this.gameClient.entities.getEntityByUUID(uuid);
+        entity.marker.addListener("click", (e) => {
+            this.gameClient.emit(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, helpers.createWaypointInfo(
+                e,
+                entity.actions,
+                entity
+            ));
+        });
+    });
+
     console.log("GameWaypoint initialised!");
 }
 
