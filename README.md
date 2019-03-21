@@ -7,8 +7,10 @@ To build and run this:
 - Clone this repository
 - Open your favourite CLI in the repository folder (Git Bash is my choice)
 - Run `npm install`
+- Run `npm test`
 - Optionally (more like mandatory), provide your own Google Maps API key, which you can obtain from [their website](https://developers.google.com/maps/documentation/javascript/get-api-key) (and make sure you enable the Places API and digital signing)
-- Finally, run `npm test`
+- Save your key in the "Settings" section of the "Configure game" page
+- You're now free to host/connect to worlds and mess around
 
 A few footnotes here:
 - I'm developing and testing this on Windows 10 x64, so I cannot guarantee that other operating systems will work.
