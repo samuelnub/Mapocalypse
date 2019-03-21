@@ -32,10 +32,14 @@ exports.IO_EVENTS = {
     HERES_ENTITY_INFOS_STC: "HERES_ENTITY_INFOS_STC",
     NEW_ENTITY_INFO_CTS: "NEW_ENTITY_INFO_CTS",
     NEW_ENTITY_INFO_STC: "NEW_ENTITY_INFO_STC",
-    IS_POS_WATER_CTS: "IS_POS_WATER_CTS",   // data given: position: { lat:num, lng:num }
-    IS_POS_WATER_STC: "IS_POS_WATER_STC",   // data given: true/false
-    ENTITY_MOVE_CTS: "ENTITY_MOVE_CTS",     // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }, err: string/null }
-    ENTITY_MOVE_STC: "ENTITY_MOVE_STC"      // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }}
+    DEAD_ENTITY_INFO_CTS: "DEAD_ENTITY_INFO_CTS",
+    DEAD_ENTITY_INFO_STC: "DEAD_ENTITY_INFO_STC",
+    IS_POS_WATER_CTS: "IS_POS_WATER_CTS",                   // data given: position: { lat:num, lng:num }
+    IS_POS_WATER_STC: "IS_POS_WATER_STC",                   // data given: true/false
+    ENTITY_MOVE_CTS: "ENTITY_MOVE_CTS",                     // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }}
+    ENTITY_MOVE_STC: "ENTITY_MOVE_STC",                     // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }, err: string/null }
+    ENTITY_HEALTH_CHANGE_CTS: "ENTITY_HEALTH_CHANGE_CTS",   // data given: entityHealthChange { uuidAffector: entity uuid, uuidAffectee: entity uuid, healthChange: num }
+    ENTITY_HEALTH_CHANGE_STC: "ENTITY_HEALTH_CHANGE_STC"    // data given: entityHealthChange { uuid: entity uuid, healthChange: num, err: string/null }
 };
 
 exports.CLIENT_EVENTS = {

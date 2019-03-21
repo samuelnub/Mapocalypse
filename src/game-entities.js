@@ -23,7 +23,12 @@ GameEntities.prototype.setupIoTransfers = function() {
     this.gameClient.ioEmit(consts.IO_EVENTS.REQUEST_ENTITY_INFOS_CTS);
     this.gameClient.ioOn(consts.IO_EVENTS.HERES_ENTITY_INFOS_STC, (entityInfos) => {
         for(let uuid of Object.keys(entityInfos)) {
-            this.createEntity(entityInfos[uuid], false);
+            this.createEntity({
+                ...entityInfos[uuid],
+                ...{
+                    position: new google.maps.LatLng(entityInfos[uuid].position.lat, entityInfos[uuid].position.lng)
+                }
+            }, false);
         }
         console.log("Received the initial entities and set them up.");
         console.log(this.entities);
@@ -36,6 +41,11 @@ GameEntities.prototype.setupIoTransfers = function() {
             return; // We already have that entity UUID (assume we made it then)
         }
         this.createEntity(entityInfo, false);
+    });
+    this.gameClient.ioOn(consts.IO_EVENTS.DEAD_ENTITY_INFO_STC, (entityInfo) => {
+        if(this.entities.hasOwnProperty(entityInfo.uuid)) {
+            this.removeEntity(entityInfo.uuid, false);
+        }
     });
 
     this.gameClient.ioOn(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
@@ -63,6 +73,16 @@ GameEntities.prototype.setupIoTransfers = function() {
         let ourNewPosition = new google.maps.LatLng(entityNewPos.position.lat, entityNewPos.position.lng)
         this.entities[entityNewPos.uuid].move(ourNewPosition, false);
     });
+
+    this.gameClient.ioOn(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_STC, (entityHealthChange) => {
+        if(entityHealthChange.err) {
+            this.gameClient.gui.logChat(locale.general.programName, entityHealthChange.err, true);
+            return;
+        }
+        this.entities[entityHealthChange.uuid].healthChange(entityHealthChange.healthChange, false, false);
+    });
+
+
 }
 
 GameEntities.prototype.createEntity = function (params, sendToServer) {
@@ -98,14 +118,21 @@ GameEntities.prototype.createEntity = function (params, sendToServer) {
     return entity;
 }
 
-GameEntities.prototype.removeEntity = function (identifier) {
+GameEntities.prototype.removeEntity = function (identifier, sendToServer) {
     // Params:
     //  identifier: either string or entity object
+    //  sendToServer: (optional) bool on whether you want to broadcast it to everyone too
     if (typeof identifier == "string") {
+        if(sendToServer == null || sendToServer === true) {
+            this.gameClient.ioEmit(consts.IO_EVENTS.DEAD_ENTITY_INFO_CTS, this.entities[identifier].export());
+        }
         this.gameClient.map.removeMarker(this.entities[identifier].marker);
         delete this.entities[identifier];
     }
     else if (typeof identifier != "string" && identifier != null) {
+        if(sendToServer == null || sendToServer === true) {
+            this.gameClient.ioEmit(consts.IO_EVENTS.DEAD_ENTITY_INFO_CTS, identifier.export());
+        }
         this.gameClient.map.removeMarker(this.entities[identifier.uuid].marker);
         delete this.entities[identifier.uuid];
     }
@@ -116,13 +143,13 @@ GameEntities.prototype.getEntityByUUID = function(uuid) {
 }
 
 GameEntities.prototype.getOurPlayer = function () {
-    // Will return false if our player doesn't exist as an entity yet
+    // Will return null if our player doesn't exist as an entity yet
     let ourUuid = this.gameClient.getOurPlayerInfo().uuid;
     if (this.entities.hasOwnProperty(ourUuid)) {
         return this.entities[ourUuid];
     }
     else {
-        return false;
+        return null;
     }
 }
 
@@ -143,6 +170,7 @@ function Entity(params) {
     //  experience: 0 to whatever
     this.gameClient = gameClient;
 
+    // Do not modify these externally, as verification/multiple steps are needed to modify these values
     this.type = params.type;
     this.uuid = params.uuid;
     this.position = params.position;
@@ -152,8 +180,27 @@ function Entity(params) {
     this.stamina = params.stamina;
     this.experience = params.experience;
 
+    this.positionEle = document.createElement("span");
+    this.positionEle.innerText = params.position.lat().toFixed(4) + " " + params.position.lng().toFixed(4);
+    this.healthEle = document.createElement("span");
+    this.healthEle.innerText = params.health;
+    this.staminaEle = document.createElement("span");
+    this.staminaEle.innerText = params.stamina;
+    this.experienceEle = document.createElement("span");
+    this.experienceEle.innerText = params.experience;
+
     // Derivatives will populate these potential waypoint actions
+    // The affector will be the client's perspective's player
     this.actions = [];
+    this.actions.push(helpers.createWaypointAction(locale.waypoint.actions.general.hurt, () => {
+        if(this.gameClient.entities.getOurPlayer() === null) {
+            return;
+        }
+        else {
+            const hurtHealthChangeBase = -10;
+            this.healthChange(hurtHealthChangeBase, this.gameClient.entities.getOurPlayer().uuid, true);
+        }
+    }))
 
     this.marker = null;
     this.genericMarkerParams = {
@@ -190,6 +237,25 @@ Entity.prototype.move = function(position, sendToServer) {
     }
     this.marker.setPosition(position);
     this.position = position;
+    this.positionEle.innerText = this.position.lat().toFixed(4) + "," + this.position.lng().toFixed(4);
+}
+
+Entity.prototype.healthChange = function(amount, uuidAffector, sendToServer) {
+    // Params:
+    //  amount: integer number that will be added on to this entity's health
+    //  uuidAffector: (optional) string uuid of the entity who illicited this health change (set to false if not specifying)
+    //  sendToServer: (optional) bool whether you want it to be a local or server-wide move, default true
+    if(sendToServer == null || sendToServer === true) {
+        this.gameClient.ioEmit(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_CTS, {
+            uuidAffectee: this.uuid,
+            uuidAffector: uuidAffector,
+            healthChange: amount
+        })
+        // Now we wait for the server's response
+        return;
+    }
+    this.health += amount;
+    this.healthEle.innerText = this.health;
 }
 
 Entity.prototype.setVisible = function(bool) {
@@ -208,7 +274,7 @@ function Player(params) {
         ...{
             icon: consts.ICON_NAMES.PLAYER,
             onClickCallback: (e) => {
-                this.gameClient.gui.logChat(this.gameClient.getPlayerInfoFromUUID(this.uuid).name + " says", "Hello!", true);
+
             }
         }
     });

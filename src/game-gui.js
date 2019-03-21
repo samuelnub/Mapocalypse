@@ -87,7 +87,28 @@ function GameGUI(gameClient) {
     this.gameClient.on(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, (waypointInfo) => {
         this.waypointInfoDiv.innerHTML = "";
         let titleP = document.createElement("p");
-        titleP.innerHTML = (typeof waypointInfo.entity == "object" ? waypointInfo.entity.type + " " + waypointInfo.entity.uuid + " " + locale.general.at: locale.waypoint.selectionAt) + waypointInfo.clickEvent.latLng.lat().toFixed(4) + "," + waypointInfo.clickEvent.latLng.lng().toFixed(4);
+        if(waypointInfo.entity != null) {
+            titleP.innerText = waypointInfo.entity.type + locale.general.at;
+            titleP.appendChild(waypointInfo.entity.positionEle);
+
+            let healthTitleEle = document.createElement("span");
+            healthTitleEle.innerText = "\n" + locale.waypoint.healthTitle;
+            titleP.appendChild(healthTitleEle);
+            titleP.appendChild(waypointInfo.entity.healthEle);
+
+            let staminaTitleEle = document.createElement("span");
+            staminaTitleEle.innerText = "\n" + locale.waypoint.staminaTitle;
+            titleP.appendChild(staminaTitleEle);
+            titleP.appendChild(waypointInfo.entity.staminaEle);
+
+            let experienceTitleEle = document.createElement("span");
+            experienceTitleEle.innerText = "\n" + locale.waypoint.experienceTitle;
+            titleP.appendChild(experienceTitleEle);
+            titleP.appendChild(waypointInfo.entity.experienceEle);
+        }
+        else {
+            titleP.innerText = locale.waypoint.selectionAt + waypointInfo.clickEvent.latLng.lat() + "," + waypointInfo.clickEvent.latLng.lng();
+        }
         this.waypointInfoDiv.appendChild(titleP);
         let actions = waypointInfo.actions;
         for(action of actions) {

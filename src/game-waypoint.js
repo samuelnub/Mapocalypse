@@ -25,7 +25,7 @@ function GameWaypoint(gameClient) {
         this.ourMarker.setVisible(true);
         this.ourMarker.setPosition(new google.maps.LatLng(e.latLng.lat(), e.latLng.lng()));
 
-        if(this.gameClient.entities.getOurPlayer() === false) {
+        if(this.gameClient.entities.getOurPlayer() === null) {
             this.gameClient.emit(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, helpers.createWaypointInfo(
                 e,
                 [
@@ -70,6 +70,7 @@ function GameWaypoint(gameClient) {
                 entity.actions,
                 entity
             ));
+            this.ourMarker.setPosition(new google.maps.LatLng(e.latLng.lat(), e.latLng.lng()));
         });
     });
 

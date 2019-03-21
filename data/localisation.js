@@ -12,10 +12,14 @@ const locale = {
     waypoint: {
         placeholder: "Click anywhere on the map to begin!",
         selectionAt: "Selection @",
+        staminaTitle: "Health:",
+        staminaTitle: "Stamina:",
+        experienceTitle: "Experience:",
         actions: {
             general: {
                 spawnOurPlayer: "Spawn our player",
-                movePlayer: "Move here"
+                movePlayer: "Move here",
+                hurt: "Hurt"
             }
         }
     },

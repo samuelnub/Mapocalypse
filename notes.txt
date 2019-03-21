@@ -114,3 +114,16 @@
     It's pretty much done
     Added a few extras like easily specifying your own gmaps api key in start-config,
     also changed the structure of keys.json
+
+18/3/2019
+    apparently Entity.position was just an object literal whenever they were being newly spawned in
+    so it's been changed to google.maps.LatLng (as it should be)
+    Also, dynamic elements so that stats like position, health and stuff can update on the fly
+    with waypoint info.
+    TODO: implement the entity health change and dead entity events in the client
+
+20/3/2019
+    TODO: killing entities doesnt seem to work
+
+21/3/2019
+    Hurting and killing works, and the entity's stats properly update on the waypoint selection info div

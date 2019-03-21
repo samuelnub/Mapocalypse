@@ -58,7 +58,7 @@ GameMap.prototype.createMarker = function(params) {
         url: "../../data/icons/" + (params.icon ? params.icon : consts.ICON_NAMES.UNKNOWN) + ".svg"
     };
     ourParams.title = params.title || locale.general.nothing;
-    ourParams.duration = params.duration || 1500;
+    ourParams.duration = params.duration || 1000;
     ourParams.map = this.map;
     let marker = new SlidingMarker(ourParams);
     marker.id = params.id || helpers.uuid();

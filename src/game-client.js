@@ -64,8 +64,8 @@ function GameClient(gameLoadInfo) {
 
     this.gui = null;
     this.map = null;
-    this.entities = null;
     this.waypoint = null;
+    this.entities = null;
 
     setTimeout(() => {
         this.stinkyConstructor(gameLoadInfo);
@@ -79,8 +79,8 @@ GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
         if (this.ioClient !== null && this.data !== null && this.playerInfos !== null) {
             this.gui = new GameGUI.GameGUI(this);
             this.map = new GameMap.GameMap(this);
-            this.entities = new GameEntities.GameEntities(this);
             this.waypoint = new GameWaypoint.GameWaypoint(this);
+            this.entities = new GameEntities.GameEntities(this);
         }
     };
 

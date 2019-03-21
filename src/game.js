@@ -49,7 +49,26 @@ Game.prototype.addEntity = function(entityInfo) {
     this.data.entities[entityInfo.uuid] = entityInfo;
 }
 
+Game.prototype.removeEntity = function(entityInfo) {
+    delete this.data.entities[entityInfo.uuid];
+}
+
 Game.prototype.setupIoSpecificTransfers = function (socket) {
+    const maxMoveDistKM = 10;
+    const maxInteractDistKM = 1;
+    const expMult = (experience) => {
+        return 500 - (500 - 1) * Math.pow(Math.E, -0.000001 * experience);
+    };
+
+    const logicLoopDelay = 2000;
+    setInterval(() => {
+        if(this.data === null) {
+            return; // because this Game class only initialises once, we gotta let it be on standby when not hosting
+        }
+        // TODO: this loop should do stuff like replenish all entity's health by a certain amount
+        // and/or move NPC's (in the faar future)
+    }, logicLoopDelay);
+
     this.server.ioOnSpecific(consts.IO_EVENTS.REQUEST_ENTITY_INFOS_CTS, socket, () => {
         this.server.ioEmitSpecific(consts.IO_EVENTS.HERES_ENTITY_INFOS_STC, socket, this.data.entities);
     }, true);
@@ -72,8 +91,8 @@ Game.prototype.setupIoSpecificTransfers = function (socket) {
     //  2. If the action is disapproved, emit back to the sender with an error message
 
     this.server.ioOnSpecific(consts.IO_EVENTS.ENTITY_MOVE_CTS, socket, (entityNewPos) => {
-        const maxMoveDist = 5 + this.getEntityByUUID(entityNewPos.uuid).experience * 0.00001; // a cool multiplier
-        if(helpers.distBetweenLatLngKm(this.getEntityByUUID(entityNewPos.uuid).position, entityNewPos.position) <= maxMoveDist) {
+        const ourMaxMoveDistKM = maxMoveDistKM * expMult(this.getEntityByUUID(entityNewPos.uuid).experience); // a cool multiplier
+        if(helpers.distBetweenLatLngKm(this.getEntityByUUID(entityNewPos.uuid).position, entityNewPos.position) <= ourMaxMoveDistKM) {
             this.isPosWater(entityNewPos.position, (isWater) => {
                 if(!isWater) {
                     this.getEntityByUUID(entityNewPos.uuid).position = entityNewPos.position;
@@ -93,6 +112,31 @@ Game.prototype.setupIoSpecificTransfers = function (socket) {
         }
         else {
             this.server.ioEmitSpecific(consts.IO_EVENTS.ENTITY_MOVE_STC, socket, {
+                err: locale.general.noThatsTooFar
+            });
+        }
+    });
+
+    this.server.ioOnSpecific(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_CTS, socket, (entityHealthChange) => {
+        const ourMaxInteractDistKM = maxInteractDistKM * expMult(this.getEntityByUUID(entityHealthChange.uuidAffector).experience);
+        if(helpers.distBetweenLatLngKm(this.getEntityByUUID(entityHealthChange.uuidAffector).position, this.getEntityByUUID(entityHealthChange.uuidAffectee).position) <= ourMaxInteractDistKM) {
+            let ourHealthChange = Math.round(entityHealthChange.healthChange * expMult(this.getEntityByUUID(entityHealthChange.uuidAffector).experience));
+            this.getEntityByUUID(entityHealthChange.uuidAffectee).health += ourHealthChange;
+            if(this.getEntityByUUID(entityHealthChange.uuidAffectee).health > 0) {
+                this.server.ioEmitAll(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_STC, {
+                    uuid: entityHealthChange.uuidAffectee,
+                    healthChange: ourHealthChange,
+                    err: null
+                });
+            }
+            else {
+                this.server.ioEmitAll(consts.IO_EVENTS.DEAD_ENTITY_INFO_STC, this.getEntityByUUID(entityHealthChange.uuidAffectee));
+                this.removeEntity(this.getEntityByUUID(entityHealthChange.uuidAffectee));
+            }
+            return;
+        }
+        else {
+            this.server.ioEmitSpecific(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_STC, socket, {
                 err: locale.general.noThatsTooFar
             });
         }

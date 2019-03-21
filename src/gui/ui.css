@@ -55,6 +55,12 @@ select {
     transition: all 0.2s ease;
 }
 
+hr {
+    height: 4px;
+    background-color: var(--accent-colour);
+    border: 0px;
+}
+
 /* width */
 ::-webkit-scrollbar {
     width: 10px;
@@ -199,6 +205,6 @@ select {
 
 #waypoint-info-div > p {
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1em;
     word-wrap: break-word;
 }
