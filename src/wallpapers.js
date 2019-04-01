@@ -63,14 +63,26 @@ Wallpapers.prototype.transition = function(repeat) {
 
     const imgIndex = helpers.randInt(0, this.data.length-1);
 
+    let date = new Date();
+
     if(curBOpacity == 1) {
-        this.aImg.src = consts.HTTP_PREFIX + this.data[imgIndex].imageURL;
+        if(date.getMonth() === 3 && date.getDay() === 1) {
+            this.aImg.src = "../../data/wallpaperA.jpg";
+        }
+        else {
+            this.aImg.src = consts.HTTP_PREFIX + this.data[imgIndex].imageURL;
+        }
         setTimeout(() => {
             this.bImg.style.opacity = "0";
         }, this.intervalDelay * 0.25);
     }
     if(curBOpacity == 0) {
-        this.bImg.src = consts.HTTP_PREFIX + this.data[imgIndex].imageURL;
+        if(date.getMonth() === 3 && date.getDay() === 1) {
+            this.bImg.src = "../../data/wallpaperB.jpg";
+        }
+        else {
+            this.bImg.src = consts.HTTP_PREFIX + this.data[imgIndex].imageURL;
+        }
         setTimeout(() => {
             this.bImg.style.opacity = "1";
         }, this.intervalDelay * 0.25);

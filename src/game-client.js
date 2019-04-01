@@ -89,34 +89,54 @@ GameClient.prototype.stinkyConstructor = function (gameLoadInfo) {
     this.ioClient.emit(consts.IO_EVENTS.HERES_MY_PLAYER_INFO_CTS, helpers.getActivePlayerInfo());
 
     this.ioClient.on(consts.IO_EVENTS.HERES_GAME_DATA_STC, (data) => {
-        console.log(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).players);
-        this.data = data;
-        console.log("Upon loading, this game data was received: " + JSON.stringify(this.data));
+        try {
+            console.log(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).players);
+            this.data = data;
+            console.log("Upon loading, this game data was received: " + JSON.stringify(this.data));
 
-        setupManagersIfIoTransfersAreDone();
+            setupManagersIfIoTransfersAreDone();
+        }
+        catch {
+            console.log("Couldn't receive game data from the server!");
+        }
     });
 
     this.ioClient.on(consts.IO_EVENTS.HERES_CONNECTED_PLAYER_INFOS_STC, (playerInfos) => {
-        console.log(playerInfos);
-        this.playerInfos = playerInfos;
+        try {
+            console.log(playerInfos);
+            this.playerInfos = playerInfos;
 
-        setupManagersIfIoTransfersAreDone();
+            setupManagersIfIoTransfersAreDone();
+        }
+        catch {
+            console.log("Couldn't receive connected player infos from the server!");
+        }
     });
 
     this.ioClient.on(consts.IO_EVENTS.NEW_CONNECTED_PLAYER_INFO_STC, (playerPacket) => {
-        if (helpers.getFirstKey(playerPacket) == this.ioClient.id) {
-            return;
+        try {
+            if (helpers.getFirstKey(playerPacket) == this.ioClient.id) {
+                return;
+            }
+            // cool way to do object.assign:
+            this.playerInfos = { ...this.playerInfos, ...playerPacket };
+            console.log("Player connected:");
+            console.log(playerPacket);
         }
-        // cool way to do object.assign:
-        this.playerInfos = { ...this.playerInfos, ...playerPacket };
-        console.log("Player connected:");
-        console.log(playerPacket);
+        catch {
+            console.log("A new player connected, but we couldn't receive the player's info from the server!");
+        }
     });
 
     this.ioClient.on(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
-        delete this.playerInfos[helpers.getFirstKey(playerPacket)]; // just some way to get rid of an object member
-        console.log("Player disconnected. Remaining players:");
-        console.log(this.playerInfos);
+        try {
+            delete this.playerInfos[helpers.getFirstKey(playerPacket)]; // just some way to get rid of an object member
+            console.log("Player disconnected. Remaining players:");
+            console.log(this.playerInfos);
+        }
+        catch {
+            console.log("A player disconnected, but we couldn't receive the player's info from the server!");
+        }
     });
 
 
@@ -162,8 +182,13 @@ GameClient.prototype.ioEmit = function (type, data) {
     //  type: string, const.IO_EVENTS type
     //  data: object you wanna send
 
-    this.ioClient.emit(type, data);
-    console.log("IO event " + type + " was emitted!");
+    try {
+        this.ioClient.emit(type, data);
+        console.log("IO event " + type + " was emitted!");
+    }
+    catch {
+        console.log("Couldn't emit io event " + type);
+    }
 }
 
 GameClient.prototype.ioOn = function (type, callback, once) {
@@ -172,16 +197,21 @@ GameClient.prototype.ioOn = function (type, callback, once) {
     //  type: string, consts.IO_EVENTS type
     //  callback: function(data), with data being the data that the server's given you
     //  once: (optional) bool, if true, will remove the listener once it's occurred
-    const callCallback = function (data) {
-        if (typeof callback == "function") {
-            callback(data);
-        }
-        if (once) {
-            this.ioClient.removeListener(type, callCallbackBound);
-        }
-    };
-    const callCallbackBound = callCallback.bind(this);
-    this.ioClient.on(type, callCallbackBound);
+    try {
+        const callCallback = function (data) {
+            if (typeof callback == "function") {
+                callback(data);
+            }
+            if (once) {
+                this.ioClient.removeListener(type, callCallbackBound);
+            }
+        };
+        const callCallbackBound = callCallback.bind(this);
+        this.ioClient.on(type, callCallbackBound);
+    }
+    catch {
+        console.log("Couldn't receive io event " + type);
+    }
 }
 
 GameClient.prototype.emit = function (type, data) {

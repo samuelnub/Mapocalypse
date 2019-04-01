@@ -11,8 +11,9 @@ const locale = {
     */
     waypoint: {
         placeholder: "Click anywhere on the map to begin!",
+        entity: "Entity",
         selectionAt: "Selection @",
-        staminaTitle: "Health:",
+        healthTitle: "Health:",
         staminaTitle: "Stamina:",
         experienceTitle: "Experience:",
         actions: {

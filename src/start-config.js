@@ -48,6 +48,9 @@
             updateLoadWorldsSelect();
         }, false);
         loadLoadBtn.addEventListener("click", (e) => {
+            if(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).isRunning()) {
+                return;
+            }
             let port = document.getElementById("settings-port-host-input").value;
             ipc.send(consts.IPC_EVENTS.GAME_START_LOAD_RTM, helpers.createGameLoadInfo(consts.LOCALHOST_ADDRESS + ":" + helpers.sanitizePort(port), loadWorldsSelect.options[loadWorldsSelect.selectedIndex].value));
         }, false);
@@ -60,16 +63,21 @@
     const maxWorldNameLength = 64;
     let newBtn = document.getElementById("new-btn");
     newBtn.addEventListener("click", (e) => {
+        if(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).isRunning()) {
+            return;
+        }
         let seed = document.getElementById("new-seed-input").value;
         let port = document.getElementById("settings-port-host-input").value;
         let worldName = document.getElementById("new-worldname-input").value;
         ipc.send(consts.IPC_EVENTS.GAME_START_LOAD_RTM, helpers.createGameLoadInfo(consts.LOCALHOST_ADDRESS + ":" + helpers.sanitizePort(port), helpers.sanitizeInput(worldName, maxWorldNameLength), parseInt(helpers.sanitizeInput(seed)) || consts.DEFAULT_SEED));
-
     }, false);
 
     // "Connect" code
     let connectBtn = document.getElementById("connect-btn");
     connectBtn.addEventListener("click", (e) => {
+        if(remote.getGlobal(consts.GLOBAL_NAMES.SERVER).isRunning()) {
+            return;
+        }
         let connectAddress = document.getElementById("connect-address-input").value;
         let connectPort = document.getElementById("connect-port-input").value;
         ipc.send(consts.IPC_EVENTS.GAME_START_LOAD_RTM, helpers.createGameLoadInfo(helpers.sanitizeAddress(connectAddress) + ":" + helpers.sanitizePort(connectPort))); // Don't need worldname obvs

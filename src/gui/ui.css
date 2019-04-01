@@ -1,6 +1,9 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --solid-blue: rgb(25,25,200);
     --solid-red: rgb(200,25,25);
+    --solid-orange: rgb(200,100,25);
+    --solid-yellow: rgb(200,200,25);
     --accent-colour: rgba(0,0,0,0.5);
     --accent-red: rgba(200,25,25,0.5);
     --accent-white: rgba(255,255,255,0.5);

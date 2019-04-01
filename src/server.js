@@ -109,6 +109,7 @@ Server.prototype.setCurrentWorld = function (worldName) {
     let world;
     try {
         world = this.worldsManager.get(worldName);
+        global[consts.GLOBAL_NAMES.GAME_LOAD_INFO].seed = world.seed; // because there can be a clash
     }
     catch (err) {
         // World doesn't exist on file, so let's create one
@@ -120,6 +121,11 @@ Server.prototype.setCurrentWorld = function (worldName) {
     }
     this.game.setGameData(world);
 };
+
+Server.prototype.isRunning = function() {
+    // returns a bool whether there's a game being hosted here at the moment
+    return (Object.keys(this.players).length == 0 ? false : true);
+}
 
 Server.prototype.listen = function (port) {
     // I tried using helpers.sanitizePort() here but it just crashed...

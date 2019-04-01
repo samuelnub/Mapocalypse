@@ -38,8 +38,8 @@ exports.IO_EVENTS = {
     IS_POS_WATER_STC: "IS_POS_WATER_STC",                   // data given: true/false
     ENTITY_MOVE_CTS: "ENTITY_MOVE_CTS",                     // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }}
     ENTITY_MOVE_STC: "ENTITY_MOVE_STC",                     // data given: entityNewPos: { uuid: entity uuid, position: { lat:num, lng:num }, err: string/null }
-    ENTITY_HEALTH_CHANGE_CTS: "ENTITY_HEALTH_CHANGE_CTS",   // data given: entityHealthChange { uuidAffector: entity uuid, uuidAffectee: entity uuid, healthChange: num }
-    ENTITY_HEALTH_CHANGE_STC: "ENTITY_HEALTH_CHANGE_STC"    // data given: entityHealthChange { uuid: entity uuid, healthChange: num, err: string/null }
+    ENTITY_HEALTH_CHANGE_CTS: "ENTITY_HEALTH_CHANGE_CTS",   // data given: entityHealthChange: { uuidAffector: entity uuid, uuidAffectee: entity uuid, healthChange: num }
+    ENTITY_HEALTH_SET_STC: "ENTITY_HEALTH_SET_STC"          // data given: entityHealthSet: { uuid: entity uuid, health: num, err: string/null }
 };
 
 exports.CLIENT_EVENTS = {

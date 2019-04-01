@@ -40,7 +40,14 @@ GameEntities.prototype.setupIoTransfers = function() {
         if(this.entities.hasOwnProperty(entityInfo.uuid)) {
             return; // We already have that entity UUID (assume we made it then)
         }
-        this.createEntity(entityInfo, false);
+        this.createEntity({
+            ...entityInfo,
+            ...{
+                position: new google.maps.LatLng(entityInfo.position.lat, entityInfo.position.lng)
+            }
+        }, false);
+        console.log("New entity created emitted by the server:");
+        console.log(this.entities[entityInfo.uuid]);
     });
     this.gameClient.ioOn(consts.IO_EVENTS.DEAD_ENTITY_INFO_STC, (entityInfo) => {
         if(this.entities.hasOwnProperty(entityInfo.uuid)) {
@@ -74,12 +81,12 @@ GameEntities.prototype.setupIoTransfers = function() {
         this.entities[entityNewPos.uuid].move(ourNewPosition, false);
     });
 
-    this.gameClient.ioOn(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_STC, (entityHealthChange) => {
-        if(entityHealthChange.err) {
-            this.gameClient.gui.logChat(locale.general.programName, entityHealthChange.err, true);
+    this.gameClient.ioOn(consts.IO_EVENTS.ENTITY_HEALTH_SET_STC, (entityHealthSet) => {
+        if(entityHealthSet.err) {
+            this.gameClient.gui.logChat(locale.general.programName, entityHealthSet.err, true);
             return;
         }
-        this.entities[entityHealthChange.uuid].healthChange(entityHealthChange.healthChange, false, false);
+        this.entities[entityHealthSet.uuid].setHealth(entityHealthSet.health);
     });
 
 
@@ -181,16 +188,21 @@ function Entity(params) {
     this.experience = params.experience;
 
     this.positionEle = document.createElement("span");
+    this.positionEle.style.color = "var(--solid-blue)";
     this.positionEle.innerText = params.position.lat().toFixed(4) + " " + params.position.lng().toFixed(4);
     this.healthEle = document.createElement("span");
+    this.healthEle.style.color = "var(--solid-red)";
     this.healthEle.innerText = params.health;
     this.staminaEle = document.createElement("span");
+    this.staminaEle.style.color = "var(--solid-orange)";
     this.staminaEle.innerText = params.stamina;
     this.experienceEle = document.createElement("span");
+    this.experienceEle.style.color = "var(--solid-yellow)";
     this.experienceEle.innerText = params.experience;
 
     // Derivatives will populate these potential waypoint actions
     // The affector will be the client's perspective's player
+    // The waypoint class will list these actions whenever this entity is clicked
     this.actions = [];
     this.actions.push(helpers.createWaypointAction(locale.waypoint.actions.general.hurt, () => {
         if(this.gameClient.entities.getOurPlayer() === null) {
@@ -221,6 +233,10 @@ Entity.prototype.export = function () {
         stamina: this.stamina,
         experience: this.experience
     }
+}
+
+Entity.prototype.getActions = function() {
+    return this.actions;
 }
 
 Entity.prototype.move = function(position, sendToServer) {
@@ -256,6 +272,13 @@ Entity.prototype.healthChange = function(amount, uuidAffector, sendToServer) {
     }
     this.health += amount;
     this.healthEle.innerText = this.health;
+}
+
+Entity.prototype.setHealth = function(newHealth) {
+    // A local function to just set our health, usually given by the server making a change
+    // Params:
+    //  newHealth: number
+    this.healthChange(newHealth-this.health,false,false);
 }
 
 Entity.prototype.setVisible = function(bool) {

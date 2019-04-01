@@ -20,7 +20,7 @@ function GameMap(gameClient) {
     const mapocalypseMapStyleNight = new google.maps.StyledMapType(
         require("../data/map-styles.js").mapStyleNight, { name: "Mapocalypse Style Night" });
 
-        this.map = new google.maps.Map(this.mapDiv, {
+    this.map = new google.maps.Map(this.mapDiv, {
         center: new google.maps.LatLng(0/*53.551458*/, 0/*-1.923063*/),
         zoom: 2,
         minZoom: 2,
@@ -40,7 +40,7 @@ function GameMap(gameClient) {
     console.log("GameMap initialised!");
 }
 
-GameMap.prototype.createMarker = function(params) {
+GameMap.prototype.createMarker = function (params) {
     // Create a marker and put it in this.marker pool
     // returns the marker
     // Params object:
@@ -53,7 +53,7 @@ GameMap.prototype.createMarker = function(params) {
 
     // having ourParams lets us copy any other custom marker parameters
     let ourParams = params;
-    ourParams.position = params.position || new google.maps.LatLng(0,0);
+    ourParams.position = params.position || new google.maps.LatLng(0, 0);
     ourParams.icon = {
         url: "../../data/icons/" + (params.icon ? params.icon : consts.ICON_NAMES.UNKNOWN) + ".svg"
     };
@@ -62,7 +62,7 @@ GameMap.prototype.createMarker = function(params) {
     ourParams.map = this.map;
     let marker = new SlidingMarker(ourParams);
     marker.id = params.id || helpers.uuid();
-    if(typeof params.onClickCallback == "function") {
+    if (typeof params.onClickCallback == "function") {
         marker.addListener("click", (e) => {
             params.onClickCallback(e);
         });
@@ -71,38 +71,38 @@ GameMap.prototype.createMarker = function(params) {
     return marker;
 }
 
-GameMap.prototype.removeMarker = function(identifier) {
+GameMap.prototype.removeMarker = function (identifier) {
     // Params:
     //  identifier: string or object, either just the id or the marker object itself
-    if(typeof identifier == "string") {
+    if (typeof identifier == "string") {
         this.markers[identifier].setMap(null);
         delete this.markers[identifier];
     }
-    else if(typeof identifier != "string" && identifier != null) {
+    else if (typeof identifier != "string" && identifier != null) {
         this.markers[identifier.id].setMap(null);
         delete this.markers[identifier];
     }
 }
 
-GameMap.prototype.onClick = function(callback) {
+GameMap.prototype.onClick = function (callback) {
     // returns google eventListener for you to keep track of, if you want to remove it
     // you probably won't use this externally, as you'll just listen to the printMapContextMenu event
     // Params:
     //   callback: function(event) where event = object (has .latLng properties)
-    
+
     let eventListener;
-    const callCallback = function(e) {
-        if(typeof callback === "function") {
+    const callCallback = function (e) {
+        if (typeof callback === "function") {
             callback(e);
         }
     };
     const callCallbackBound = callCallback.bind(this);
-    
+
     eventListener = google.maps.event.addListener(this.map, "click", callCallbackBound);
     return eventListener;
 }
 
-GameMap.prototype.removeOnClick = function(eventListener) {
+GameMap.prototype.removeOnClick = function (eventListener) {
     // Params:
     //  eventListener: google.maps.event EventListener
 

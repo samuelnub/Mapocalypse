@@ -120,12 +120,12 @@ Game.prototype.setupIoSpecificTransfers = function (socket) {
     this.server.ioOnSpecific(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_CTS, socket, (entityHealthChange) => {
         const ourMaxInteractDistKM = maxInteractDistKM * expMult(this.getEntityByUUID(entityHealthChange.uuidAffector).experience);
         if(helpers.distBetweenLatLngKm(this.getEntityByUUID(entityHealthChange.uuidAffector).position, this.getEntityByUUID(entityHealthChange.uuidAffectee).position) <= ourMaxInteractDistKM) {
-            let ourHealthChange = Math.round(entityHealthChange.healthChange * expMult(this.getEntityByUUID(entityHealthChange.uuidAffector).experience));
-            this.getEntityByUUID(entityHealthChange.uuidAffectee).health += ourHealthChange;
+            let ourHealth = Math.round(entityHealthChange.healthChange * expMult(this.getEntityByUUID(entityHealthChange.uuidAffector).experience));
+            this.getEntityByUUID(entityHealthChange.uuidAffectee).health += ourHealth;
             if(this.getEntityByUUID(entityHealthChange.uuidAffectee).health > 0) {
-                this.server.ioEmitAll(consts.IO_EVENTS.ENTITY_HEALTH_CHANGE_STC, {
+                this.server.ioEmitAll(consts.IO_EVENTS.ENTITY_HEALTH_SET_STC, {
                     uuid: entityHealthChange.uuidAffectee,
-                    healthChange: ourHealthChange,
+                    health: this.getEntityByUUID(entityHealthChange.uuidAffectee).health,
                     err: null
                 });
             }

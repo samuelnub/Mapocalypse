@@ -88,7 +88,7 @@ function GameGUI(gameClient) {
         this.waypointInfoDiv.innerHTML = "";
         let titleP = document.createElement("p");
         if(waypointInfo.entity != null) {
-            titleP.innerText = waypointInfo.entity.type + locale.general.at;
+            titleP.innerText = (waypointInfo.entity.type === consts.ENTITY_TYPES.PLAYER ? this.gameClient.getPlayerInfoFromUUID(waypointInfo.entity.uuid).name : locale.waypoint.entity) + locale.general.at;
             titleP.appendChild(waypointInfo.entity.positionEle);
 
             let healthTitleEle = document.createElement("span");
@@ -107,7 +107,7 @@ function GameGUI(gameClient) {
             titleP.appendChild(waypointInfo.entity.experienceEle);
         }
         else {
-            titleP.innerText = locale.waypoint.selectionAt + waypointInfo.clickEvent.latLng.lat() + "," + waypointInfo.clickEvent.latLng.lng();
+            titleP.innerText = locale.waypoint.selectionAt + waypointInfo.clickEvent.latLng.lat().toFixed(4) + "," + waypointInfo.clickEvent.latLng.lng().toFixed(4);
         }
         this.waypointInfoDiv.appendChild(titleP);
         let actions = waypointInfo.actions;

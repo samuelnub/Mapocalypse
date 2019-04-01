@@ -127,3 +127,13 @@
 
 21/3/2019
     Hurting and killing works, and the entity's stats properly update on the waypoint selection info div
+    Huh. There were a few bugs when a player died and tried respawning. It wouldn't show on everyone else's client
+    unless I... console.logged it. Hmm. It seems fixed now
+
+22/3/2019
+    Prevented a potential race condition where multiple clients would clash a health change
+    (eg both hurting another player), so the server sends out a ENTITY_HEALTH_SET instead of
+    a ENTITY_HEALTH_CHANGE event
+
+1/4/2019
+    bugfixes

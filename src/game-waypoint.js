@@ -62,12 +62,12 @@ function GameWaypoint(gameClient) {
         }
     });
 
-    this.gameClient.on(consts.CLIENT_EVENTS.ENTITY_CREATED, (uuid) => {
+    this.gameClient.on(consts.CLIENT_EVENTS.ENTITY_CREATED, (uuid) => { // Hence the waypoint class must initialise before the entity class
         let entity = this.gameClient.entities.getEntityByUUID(uuid);
         entity.marker.addListener("click", (e) => {
             this.gameClient.emit(consts.CLIENT_EVENTS.WAYPOINT_SELECTION_INFO, helpers.createWaypointInfo(
                 e,
-                entity.actions,
+                entity.getActions(),
                 entity
             ));
             this.ourMarker.setPosition(new google.maps.LatLng(e.latLng.lat(), e.latLng.lng()));
