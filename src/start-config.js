@@ -102,4 +102,8 @@
         updateGoogleMapsAPIKeysArchive();
         newKeyInput.value = "";
     }, false)
+
+    window.onbeforeunload = () => {
+        remote.getGlobal(consts.GLOBAL_NAMES.SERVER).worldsManager.writeToFile();
+    };
 })();

@@ -137,3 +137,9 @@
 
 1/4/2019
     bugfixes
+
+23/4/2019
+    fixed bug where deleted world wouldn't properly delete itself from file if you just closed the start-config window
+    there's still a minor issue where if you spawn your player, you can click "spawn our player" multiple times
+    and spawn in phanton, uncontrollable entities with different uuids. they dont seem to get saved though so it should
+    disappear on reload
