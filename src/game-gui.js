@@ -29,6 +29,7 @@ function GameGUI(gameClient) {
 
     this.chatInput = document.createElement("input");
     this.chatInput.id = "chat-input";
+    this.chatInput.placeholder = locale.gui.chatInputPlaceholder;
     this.chatDiv.appendChild(this.chatInput);
     const chatMsgCharLimit = 420;
     let ourSendChat = function() {
@@ -70,7 +71,7 @@ function GameGUI(gameClient) {
         }
         this.logChat(
             locale.general.programName,
-            helpers.getFirstKeysValue(playerPacket).name + " has connected!",
+            helpers.getFirstKeysValue(playerPacket).name + locale.gui.playerHasConnected,
             true
         );
     });
@@ -78,7 +79,7 @@ function GameGUI(gameClient) {
     this.gameClient.ioOn(consts.IO_EVENTS.NEW_DISCONNECTED_PLAYER_INFO_STC, (playerPacket) => {
         this.logChat(
             locale.general.programName,
-            helpers.getFirstKeysValue(playerPacket).name + " has disconnected!",
+            helpers.getFirstKeysValue(playerPacket).name + locale.gui.playerHasDisconnected,
             true
         );
     });

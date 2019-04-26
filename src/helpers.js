@@ -3,46 +3,6 @@ const consts = require("./consts");
 const fs = require("fs");
 const path = require("path");
 
-exports.draggableElement = draggableElement;
-function draggableElement(elmnt) {
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    if (document.getElementById(elmnt.id + "-header")) {
-        /* if present, the header is where you move the DIV from:*/
-        document.getElementById(elmnt.id + "-header").onmousedown = dragMouseDown;
-    } else {
-        /* otherwise, move the DIV from anywhere inside the DIV:*/
-        elmnt.onmousedown = dragMouseDown;
-    }
-
-    function dragMouseDown(e) {
-        e = e || window.event;
-        // get the mouse cursor position at startup:
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        // call a function whenever the cursor moves:
-        document.onmousemove = elementDrag;
-    }
-
-    function elementDrag(e) {
-        e = e || window.event;
-        // calculate the new cursor position:
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        // set the element's new position:
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    }
-
-    function closeDragElement() {
-        /* stop moving when mouse button is released:*/
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-}
-
 exports.createPlayerInfo = createPlayerInfo;
 function createPlayerInfo(name, uuid) {
     return {
@@ -208,7 +168,6 @@ function sanitizeInput(message, charLimit) {
 exports.sanitizeAddress = sanitizeAddress;
 function sanitizeAddress(address) {
     // ipv4 and ipv6 compatible!
-    // Taken from https://stackoverflow.com/questions/23483855/javascript-regex-to-validate-ipv4-and-ipv6-address-no-hostnames
     var ipRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$|^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/;
     if(!ipRegex.test(address)) {
         return consts.LOCALHOST_ADDRESS;
@@ -273,8 +232,6 @@ function createButton(text, callback) {
 
 exports.distBetweenLatLngKm = distBetweenLatLngKm;
 function distBetweenLatLngKm(pos1, pos2) {
-    // From https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
-
     let lat1 = pos1.lat;
     let lon1 = pos1.lng;
     let lat2 = pos2.lat;
@@ -299,7 +256,6 @@ function distBetweenLatLngKm(pos1, pos2) {
 
 exports.uuid = uuid;
 function uuid() {
-    // v4, from https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -312,61 +268,3 @@ function randInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-exports.copyToClipboard = copyToClipboard;
-function copyToClipboard(text) {
-    var textArea = document.createElement("textarea");
-    // Obtained from https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
-    //
-    // *** This styling is an extra step which is likely not required. ***
-    //
-    // Why is it here? To ensure:
-    // 1. the element is able to have focus and selection.
-    // 2. if element was to flash render it has minimal visual impact.
-    // 3. less flakyness with selection and copying which **might** occur if
-    //    the textarea element is not visible.
-    //
-    // The likelihood is the element won't even render, not even a flash,
-    // so some of these are just precautions. However in IE the element
-    // is visible whilst the popup box asking the user for permission for
-    // the web page to copy to the clipboard.
-    //
-  
-    // Place in top-left corner of screen regardless of scroll position.
-    textArea.style.position = 'fixed';
-    textArea.style.top = 0;
-    textArea.style.left = 0;
-  
-    // Ensure it has a small width and height. Setting to 1px / 1em
-    // doesn't work as this gives a negative w/h on some browsers.
-    textArea.style.width = '2em';
-    textArea.style.height = '2em';
-  
-    // We don't need padding, reducing the size if it does flash render.
-    textArea.style.padding = 0;
-  
-    // Clean up any borders.
-    textArea.style.border = 'none';
-    textArea.style.outline = 'none';
-    textArea.style.boxShadow = 'none';
-  
-    // Avoid flash of white box if rendered for any reason.
-    textArea.style.background = 'transparent';
-  
-  
-    textArea.value = text;
-  
-    document.body.appendChild(textArea);
-  
-    textArea.select();
-  
-    try {
-      var successful = document.execCommand('copy');
-      var msg = successful ? 'successful' : 'unsuccessful';
-      console.log('Copying text command was ' + msg);
-    } catch (err) {
-      console.log('Oops, unable to copy');
-    }
-  
-    document.body.removeChild(textArea);
-  }

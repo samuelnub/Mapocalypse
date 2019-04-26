@@ -143,3 +143,10 @@
     there's still a minor issue where if you spawn your player, you can click "spawn our player" multiple times
     and spawn in phanton, uncontrollable entities with different uuids. they dont seem to get saved though so it should
     disappear on reload
+
+25/4/2019
+    (use solarised light theme for pasting into documentation)
+    (default is dark+)
+
+26/4/2019
+    Caught a non-localised string in GameGUI

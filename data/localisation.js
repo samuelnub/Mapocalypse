@@ -50,6 +50,11 @@ const locale = {
             ].join("\n");
         }
     },
+    gui: {
+        chatInputPlaceholder: "Enter chat message...",
+        playerHasConnected: " has connected!",
+        playerHasDisconnected: " has disconnected!"
+    },
     mainMenu: {
         get titleH1() {
             return locale.general.programName;
