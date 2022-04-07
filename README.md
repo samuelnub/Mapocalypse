@@ -2,11 +2,15 @@
 ## Hello!
 ##### This is the comprehensive repository for my 2018/2019 AQA A-Level Computer Science Non-Exam Assessment
 
-![](https://i.imgur.com/l6zJgj3.png)
-
-![](https://i.imgur.com/MUMPxYB.png)
-
 ![](https://i.imgur.com/3twmXop.png)
+
+Here is the class diagram of the program:
+![](https://i.imgur.com/uLNages.jpg)
+
+Here is the program flow:
+![](https://i.imgur.com/6G9aBvG.jpg)
+
+[Here is a video](https://youtu.be/txjnF8Z7a0o) showcasing the program in action
 
 To build and run this:
 - You need [Node.js](https://nodejs.org/en/) and npm as a prerequisite
